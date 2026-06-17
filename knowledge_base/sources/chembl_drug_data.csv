@@ -1,5 +1,5 @@
 inn_name,chembl_id,molecular_weight,cyp_relationships,cyp_count,status
-warfarin,CHEMBL1464,308.33,,0,found
+warfarin,CHEMBL1464,308.33,CYP2C9:metabolized_by | CYP2C19:metabolized_by | CYP2C18:metabolized_by | CYP2C8:metabolized_by | CYP2C19:metabolized_by | CYP2C18:metabolized_by | CYP2C8:metabolized_by | CYP3A4:metabolized_by | CYP2C19:metabolized_by | CYP1A1:metabolized_by | CYP1A2:metabolized_by | CYP2C8:metabolized_by | CYP1A2:metabolized_by | CYP1A1:metabolized_by | CYP2C19:metabolized_by | CYP1A2:metabolized_by | CYP1A1:metabolized_by | CYP2C19:metabolized_by | CYP2C18:metabolized_by,19,found
 heparin,CHEMBL4650299,,,0,found
 aspirin,CHEMBL25,180.16,,0,found
 clopidogrel,CHEMBL1771,321.83,,0,found
@@ -13,19 +13,19 @@ furosemide,CHEMBL35,330.75,,0,found
 spironolactone,CHEMBL1393,416.58,,0,found
 digoxin,CHEMBL1751,780.95,,0,found
 atorvastatin,CHEMBL1487,558.65,,0,found
-simvastatin,CHEMBL1064,418.57,,0,found
-ibuprofen,CHEMBL521,206.28,,0,found
-diclofenac,CHEMBL139,296.15,,0,found
+simvastatin,CHEMBL1064,418.57,CYP3A4:metabolized_by,1,found
+ibuprofen,CHEMBL521,206.28,CYP2C9:metabolized_by | CYP2C9:metabolized_by | CYP2C9:metabolized_by | CYP2C9:metabolized_by,4,found
+diclofenac,CHEMBL139,296.15,CYP2B6:metabolized_by | CYP2C8:metabolized_by | CYP3A4:metabolized_by | CYP2C18:metabolized_by | CYP2C19:metabolized_by | CYP2C9:metabolized_by | CYP2C19:metabolized_by | CYP2C8:metabolized_by | CYP2C18:metabolized_by | CYP2B6:metabolized_by | CYP3A4:metabolized_by | CYP3A4:metabolized_by | CYP2C9:metabolized_by | CYP2C8:metabolized_by | CYP3A4:metabolized_by | CYP2C19:metabolized_by | CYP2C18:metabolized_by | CYP2B6:metabolized_by | CYP2C9:metabolized_by | CYP2C9:metabolized_by,20,found
 naproxen,CHEMBL154,230.26,,0,found
 prednisolone,CHEMBL131,360.45,,0,found
 amoxicillin,CHEMBL1082,365.41,,0,found
 ciprofloxacin,CHEMBL8,331.35,,0,found
 metronidazole,CHEMBL137,171.16,,0,found
-clarithromycin,CHEMBL1741,747.96,,0,found
+clarithromycin,CHEMBL1741,747.96,CYP3A4:metabolized_by | CYP3A4:metabolized_by,2,found
 fluconazole,CHEMBL106,306.28,,0,found
 carbamazepine,CHEMBL108,236.27,,0,found
 valproate,,,,0,NOT FOUND
 fluoxetine,CHEMBL41,309.33,,0,found
 sertraline,CHEMBL809,306.24,,0,found
-omeprazole,CHEMBL1503,345.42,,0,found
+omeprazole,CHEMBL1503,345.42,CYP2C19:metabolized_by | CYP3A4:metabolized_by,2,found
 tramadol,CHEMBL1237044,263.38,,0,found
