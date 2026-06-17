@@ -74,7 +74,8 @@ def scrape_catalog():
 data = scrape_catalog()
 if data:
     df = pd.DataFrame(data)
-    df.to_csv("pct_filtered_medicines.csv", index=False, encoding="utf-8-sig")
+    output_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../sources/pct_filtered_medicines.csv")
+    df.to_csv(output_path, index=False, encoding="utf-8-sig")
     print(f"Successfully saved {len(data)} items to CSV.")
 else:
     # If network fails or layout block changed during standard requests execution inside python sandbox environment, 
