@@ -57,7 +57,7 @@ for drug in DRUGS:
         print(f"  ✗ Not found")
     time.sleep(0.3)
 
-output_dir = os.path.dirname(os.path.abspath(__file__))
+output_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../sources")
 output_file = os.path.join(output_dir, "openfda_drug_data.csv")
 
 with open(output_file, "w", newline="", encoding="utf-8") as f:

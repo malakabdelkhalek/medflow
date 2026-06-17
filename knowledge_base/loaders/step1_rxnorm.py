@@ -61,7 +61,7 @@ for drug in DRUGS:
     time.sleep(0.3)
 
 # Les fichiers seront créés dans le même dossier que ce script
-output_dir = os.path.dirname(os.path.abspath(__file__))
+output_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../sources")
 
 with open(os.path.join(output_dir, "rxnorm_mapping.csv"), "w", newline="") as f:
     writer = csv.DictWriter(f, fieldnames=["inn_name", "rxnorm_cui", "all_synonyms", "status"])

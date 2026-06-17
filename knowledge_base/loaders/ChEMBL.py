@@ -31,19 +31,24 @@ def get_chembl_id(drug_name):
     return mol.get("molecule_chembl_id"), mol.get("molecule_properties", {})
 
 def get_cyp_data(chembl_id):
-    url = f"{BASE_URL}/mechanism.json?molecule_chembl_id={chembl_id}&limit=20"
+    # metabolism endpoint: shows which enzymes metabolize this drug
+    url = f"{BASE_URL}/metabolism.json?substrate_chembl_id={chembl_id}&limit=20"
     r = requests.get(url)
     if r.status_code != 200:
         return []
-    data = r.json()
-    mechanisms = data.get("mechanisms", [])
     cyp_entries = []
-    for m in mechanisms:
-        target = m.get("target_name", "")
-        if "CYP" in target.upper():
-            cyp_entries.append(
-                f"{target}:{m.get('action_type','?')}"
-            )
+    for m in r.json().get("metabolisms", []):
+        enzyme = m.get("enzyme_name", "")
+        if enzyme and "CYP" in enzyme.upper():
+            cyp_entries.append(f"{enzyme}:metabolized_by")
+    # inhibition/induction endpoint
+    url2 = f"{BASE_URL}/mechanism.json?molecule_chembl_id={chembl_id}&limit=20"
+    r2 = requests.get(url2)
+    if r2.status_code == 200:
+        for m in r2.json().get("mechanisms", []):
+            target = m.get("target_name", "")
+            if "CYP" in target.upper():
+                cyp_entries.append(f"{target}:{m.get('action_type','?')}")
     return cyp_entries
 
 results = []
@@ -74,7 +79,7 @@ for drug in DRUGS:
         print(f"  ✗ Not found")
     time.sleep(0.3)
 
-output_dir = os.path.dirname(os.path.abspath(__file__))
+output_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../sources")
 output_file = os.path.join(output_dir, "chembl_drug_data.csv")
 
 with open(output_file, "w", newline="", encoding="utf-8") as f:
