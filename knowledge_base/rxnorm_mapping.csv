@@ -1,0 +1,31 @@
+inn_name,rxnorm_cui,all_synonyms,status
+warfarin,11289,warfarin | warfarin,found
+heparin,235473,"heparin, porcine | heparin, porcine",found
+aspirin,1191,aspirin | aspirin,found
+clopidogrel,236991,clopidogrel bisulfate | clopidogrel bisulfate,found
+metformin,235743,metFORMIN hydrochloride | metformin hydrochloride | metFORMIN hydrochloride,found
+glibenclamide,4815,glyBURIDE | glyburide | glibenclamide | glyBURIDE,found
+insulin glargine,274783,insulin glargine | insulin glargine,found
+enalapril,203123,enalapril maleate | enalapril maleate,found
+ramipril,35296,ramipril | ramipril,found
+amlodipine,104416,amLODIPine besylate | amlodipine besylate | amLODIPine besylate,found
+furosemide,4603,furosemide | furosemide,found
+spironolactone,9997,spironolactone | spironolactone,found
+digoxin,3407,digoxin | digoxin,found
+atorvastatin,83367,atorvastatin | atorvastatin,found
+simvastatin,36567,simvastatin | simvastatin,found
+ibuprofen,5640,ibuprofen | ibuprofen,found
+diclofenac,3355,diclofenac | diclofenac,found
+naproxen,7258,naproxen | naproxen,found
+prednisolone,34372,prednisoLONE acetate | prednisolone acetate | prednisoLONE acetate,found
+amoxicillin,133008,amoxicillin trihydrate | amoxicillin trihydrate,found
+ciprofloxacin,235851,ciprofloxacin lactate | ciprofloxacin lactate,found
+metronidazole,103866,metroNIDAZOLE benzoate | metronidazole benzoate | metroNIDAZOLE benzoate,found
+clarithromycin,21212,clarithromycin | clarithromycin,found
+fluconazole,4450,fluconazole | fluconazole,found
+carbamazepine,2002,carBAMazepine | carbamazepine | carBAMazepine,found
+valproate,40254,valproate | valproate,found
+fluoxetine,227224,FLUoxetine hydrochloride | fluoxetine hydrochloride | FLUoxetine hydrochloride,found
+sertraline,155137,sertraline hydrochloride | sertraline hydrochloride,found
+omeprazole,283742,esomeprazole | esomeprazole,found
+tramadol,10689,traMADol | tramadol | traMADol,found

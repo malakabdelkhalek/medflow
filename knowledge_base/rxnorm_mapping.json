@@ -1,0 +1,182 @@
+[
+  {
+    "inn_name": "warfarin",
+    "rxnorm_cui": "11289",
+    "all_synonyms": "warfarin | warfarin",
+    "status": "found"
+  },
+  {
+    "inn_name": "heparin",
+    "rxnorm_cui": "235473",
+    "all_synonyms": "heparin, porcine | heparin, porcine",
+    "status": "found"
+  },
+  {
+    "inn_name": "aspirin",
+    "rxnorm_cui": "1191",
+    "all_synonyms": "aspirin | aspirin",
+    "status": "found"
+  },
+  {
+    "inn_name": "clopidogrel",
+    "rxnorm_cui": "236991",
+    "all_synonyms": "clopidogrel bisulfate | clopidogrel bisulfate",
+    "status": "found"
+  },
+  {
+    "inn_name": "metformin",
+    "rxnorm_cui": "235743",
+    "all_synonyms": "metFORMIN hydrochloride | metformin hydrochloride | metFORMIN hydrochloride",
+    "status": "found"
+  },
+  {
+    "inn_name": "glibenclamide",
+    "rxnorm_cui": "4815",
+    "all_synonyms": "glyBURIDE | glyburide | glibenclamide | glyBURIDE",
+    "status": "found"
+  },
+  {
+    "inn_name": "insulin glargine",
+    "rxnorm_cui": "274783",
+    "all_synonyms": "insulin glargine | insulin glargine",
+    "status": "found"
+  },
+  {
+    "inn_name": "enalapril",
+    "rxnorm_cui": "203123",
+    "all_synonyms": "enalapril maleate | enalapril maleate",
+    "status": "found"
+  },
+  {
+    "inn_name": "ramipril",
+    "rxnorm_cui": "35296",
+    "all_synonyms": "ramipril | ramipril",
+    "status": "found"
+  },
+  {
+    "inn_name": "amlodipine",
+    "rxnorm_cui": "104416",
+    "all_synonyms": "amLODIPine besylate | amlodipine besylate | amLODIPine besylate",
+    "status": "found"
+  },
+  {
+    "inn_name": "furosemide",
+    "rxnorm_cui": "4603",
+    "all_synonyms": "furosemide | furosemide",
+    "status": "found"
+  },
+  {
+    "inn_name": "spironolactone",
+    "rxnorm_cui": "9997",
+    "all_synonyms": "spironolactone | spironolactone",
+    "status": "found"
+  },
+  {
+    "inn_name": "digoxin",
+    "rxnorm_cui": "3407",
+    "all_synonyms": "digoxin | digoxin",
+    "status": "found"
+  },
+  {
+    "inn_name": "atorvastatin",
+    "rxnorm_cui": "83367",
+    "all_synonyms": "atorvastatin | atorvastatin",
+    "status": "found"
+  },
+  {
+    "inn_name": "simvastatin",
+    "rxnorm_cui": "36567",
+    "all_synonyms": "simvastatin | simvastatin",
+    "status": "found"
+  },
+  {
+    "inn_name": "ibuprofen",
+    "rxnorm_cui": "5640",
+    "all_synonyms": "ibuprofen | ibuprofen",
+    "status": "found"
+  },
+  {
+    "inn_name": "diclofenac",
+    "rxnorm_cui": "3355",
+    "all_synonyms": "diclofenac | diclofenac",
+    "status": "found"
+  },
+  {
+    "inn_name": "naproxen",
+    "rxnorm_cui": "7258",
+    "all_synonyms": "naproxen | naproxen",
+    "status": "found"
+  },
+  {
+    "inn_name": "prednisolone",
+    "rxnorm_cui": "34372",
+    "all_synonyms": "prednisoLONE acetate | prednisolone acetate | prednisoLONE acetate",
+    "status": "found"
+  },
+  {
+    "inn_name": "amoxicillin",
+    "rxnorm_cui": "133008",
+    "all_synonyms": "amoxicillin trihydrate | amoxicillin trihydrate",
+    "status": "found"
+  },
+  {
+    "inn_name": "ciprofloxacin",
+    "rxnorm_cui": "235851",
+    "all_synonyms": "ciprofloxacin lactate | ciprofloxacin lactate",
+    "status": "found"
+  },
+  {
+    "inn_name": "metronidazole",
+    "rxnorm_cui": "103866",
+    "all_synonyms": "metroNIDAZOLE benzoate | metronidazole benzoate | metroNIDAZOLE benzoate",
+    "status": "found"
+  },
+  {
+    "inn_name": "clarithromycin",
+    "rxnorm_cui": "21212",
+    "all_synonyms": "clarithromycin | clarithromycin",
+    "status": "found"
+  },
+  {
+    "inn_name": "fluconazole",
+    "rxnorm_cui": "4450",
+    "all_synonyms": "fluconazole | fluconazole",
+    "status": "found"
+  },
+  {
+    "inn_name": "carbamazepine",
+    "rxnorm_cui": "2002",
+    "all_synonyms": "carBAMazepine | carbamazepine | carBAMazepine",
+    "status": "found"
+  },
+  {
+    "inn_name": "valproate",
+    "rxnorm_cui": "40254",
+    "all_synonyms": "valproate | valproate",
+    "status": "found"
+  },
+  {
+    "inn_name": "fluoxetine",
+    "rxnorm_cui": "227224",
+    "all_synonyms": "FLUoxetine hydrochloride | fluoxetine hydrochloride | FLUoxetine hydrochloride",
+    "status": "found"
+  },
+  {
+    "inn_name": "sertraline",
+    "rxnorm_cui": "155137",
+    "all_synonyms": "sertraline hydrochloride | sertraline hydrochloride",
+    "status": "found"
+  },
+  {
+    "inn_name": "omeprazole",
+    "rxnorm_cui": "283742",
+    "all_synonyms": "esomeprazole | esomeprazole",
+    "status": "found"
+  },
+  {
+    "inn_name": "tramadol",
+    "rxnorm_cui": "10689",
+    "all_synonyms": "traMADol | tramadol | traMADol",
+    "status": "found"
+  }
+]

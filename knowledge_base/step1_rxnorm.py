@@ -15,7 +15,7 @@ DRUGS = [
     "carbamazepine", "valproate", "fluoxetine",
     "sertraline", "omeprazole", "tramadol"
 ]
-
+#CUI canoniques
 BASE_URL = "https://rxnav.nlm.nih.gov/REST"
 
 def get_rxcui(drug_name):
