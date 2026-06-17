@@ -50,7 +50,8 @@ CREATE TABLE cyp_relationships (
     molecule_id INT REFERENCES molecules(id),
     enzyme VARCHAR(20),
     relationship VARCHAR(20),
-    strength VARCHAR(10)
+    strength VARCHAR(10),
+    UNIQUE(molecule_id, enzyme, relationship)
 );
 
 CREATE TABLE contraindications (

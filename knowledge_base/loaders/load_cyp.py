@@ -26,7 +26,8 @@ with open(csv_path, newline="") as f:
             enzyme, rel = parts[0].strip(), parts[1].strip().lower()
             cur.execute("""
                 INSERT INTO cyp_relationships (molecule_id, enzyme, relationship)
-                VALUES (%s, %s, %s) ON CONFLICT DO NOTHING
+                VALUES (%s, %s, %s)
+                ON CONFLICT DO NOTHING
             """, (mol[0], enzyme, rel))
             loaded += 1
 
