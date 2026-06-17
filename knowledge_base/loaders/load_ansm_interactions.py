@@ -59,7 +59,7 @@ def get_or_create_molecule(raw_inn):
     cur.execute("INSERT INTO molecules (inn) VALUES (%s) RETURNING id", (inn,))
     return cur.fetchone()[0]
 
-csv_files = glob.glob(os.path.join(os.path.dirname(__file__), "ansm_interactions_*.csv"))
+csv_files = glob.glob(os.path.join(os.path.dirname(__file__), "../sources/ansm_interactions_all.csv"))
 loaded, skipped = 0, 0
 
 for filepath in csv_files:
