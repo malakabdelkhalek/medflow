@@ -1,3 +1,0 @@
-molecule_a,molecule_b,severity_ansm,clinical_effect,management
-furosemide,metformin,precaution_emploi,Acidose lactique due à la metformine déclenchée par insuffisance rénale fonctionnelle liée aux diurétiques de l'anse,"Ne pas utiliser metformine si créatininémie >15mg/l (135μmol/l) homme, >12mg/l (110μmol/l) femme"
-furosemide,lithium,deconseillee,Augmentation de la lithémie avec signes de surdosage (diminution excrétion urinaire lithium),"Si association inévitable, surveillance stricte lithémie et adaptation posologie lithium"
