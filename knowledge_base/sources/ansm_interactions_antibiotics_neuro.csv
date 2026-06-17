@@ -1,0 +1,11 @@
+molecule_a,molecule_b,severity_ansm,clinical_effect,management
+clarithromycin,simvastatin,contre_indique,Risque majoré de rhabdomyolyse par inhibition CYP3A4,Contre-indiqué
+clarithromycin,atorvastatin,precaution_emploi,Risque majoré de rhabdomyolyse par inhibition CYP3A4,"Utiliser doses plus faibles, si objectif non atteint utiliser autre statine non concernée"
+clarithromycin,carbamazepine,deconseillee,Augmentation concentrations plasmatiques carbamazépine avec signes de surdosage par inhibition métabolisme hépatique,Association déconseillée
+fluconazole,rifabutine,precaution_emploi,Risque d'accroissement des effets indésirables de la rifabutine (uvéites) par augmentation concentrations et métabolite actif,"Surveillance clinique et biologique régulière, notamment en début d'association"
+carbamazepine,rifampicin,precaution_emploi,Diminution concentrations plasmatiques et efficacité carbamazépine par induction métabolisme hépatique par rifampicine,"Surveillance clinique, contrôle concentrations plasmatiques, adaptation posologie pendant et après rifampicine"
+valproate,rifampicin,deconseillee,Risque majoré de réactions cutanées graves (syndrome de Lyell),"Si association nécessaire, surveillance clinique étroite"
+fluoxetine,meqitazine,deconseillee,Risque de majoration des effets indésirables de la méquitazine par inhibition de son métabolisme,Association déconseillée
+fluoxetine,phenytoin,precaution_emploi,Augmentation concentrations plasmatiques phénytoïne avec signes de surdosage par inhibition métabolisme,"Surveillance clinique et éventuellement concentrations plasmatiques phénytoïne, adaptation posologique"
+omeprazole,tacrolimus,precaution_emploi,Augmentation concentrations sanguines du tacrolimus,"Dosage concentrations tacrolimus, contrôle fonction rénale, adaptation posologie"
+metronidazole,rifampicin,precaution_emploi,Diminution concentrations plasmatiques métronidazole par augmentation métabolisme hépatique par rifampicine,"Surveillance clinique, adaptation éventuelle posologie métronidazole pendant et après rifampicine"

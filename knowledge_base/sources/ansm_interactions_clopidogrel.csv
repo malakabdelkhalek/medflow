@@ -1,0 +1,5 @@
+molecule_a,molecule_b,severity_ansm,clinical_effect,management
+clopidogrel,aspirin (hors indications validées SCA),deconseillee,Majoration du risque hémorragique par addition des activités antiagrégantes,Association déconseillée hors SCA
+clopidogrel,aspirin (dans SCA indications validées),precaution_emploi,Majoration du risque hémorragique par addition des activités antiagrégantes,Surveillance clinique
+clopidogrel,paclitaxel,a_prendre_en_compte,Augmentation des concentrations du paclitaxel avec risque de majoration des effets indésirables,Surveillance
+clopidogrel,repaglinide,a_prendre_en_compte,Augmentation des concentrations du répaglinide avec risque de majoration des effets indésirables,Surveillance

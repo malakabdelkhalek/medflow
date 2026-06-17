@@ -1,0 +1,3 @@
+molecule_a,molecule_b,severity_ansm,clinical_effect,management
+digoxin,dronedarone,deconseillee,Bradycardie excessive + troubles conduction AV + augmentation digoxinémie par inhibition métabolisme digoxine,"Réduire de moitié les doses de digoxine, surveillance clinique et ECG"
+digoxin,atorvastatin,deconseillee,Risque majoré de rhabdomyolyse (diminution métabolisme hépatique atorvastatine),"Utiliser doses plus faibles d'atorvastatine, si objectif non atteint utiliser autre statine"

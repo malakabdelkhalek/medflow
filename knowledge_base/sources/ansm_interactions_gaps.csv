@@ -1,0 +1,5 @@
+molecule_a,molecule_b,severity_ansm,severity_openfda,severity_active,clinical_effect,management,source
+tramadol,fluoxetine,deconseillee,major,deconseillee,Risque de syndrome sérotoninergique (tramadol substrat CYP2D6 + activité sérotoninergique — fluoxétine inhibe CYP2D6 et recapture sérotonine),"Surveiller signes syndrome sérotoninergique (agitation, hyperthermie, tremblements). Eviter association.",ANSM classe + OpenFDA
+tramadol,sertraline,deconseillee,major,deconseillee,Risque de syndrome sérotoninergique,"Surveiller signes syndrome sérotoninergique. Eviter association.",ANSM classe + OpenFDA
+fluconazole,warfarin,precaution_emploi,major,major,Augmentation significative du temps de prothrombine — fluconazole inhibe CYP2C9 métabolisme warfarine,"Contrôle INR plus fréquent, adapter posologie warfarine pendant et après fluconazole.",OpenFDA confirmed
+fluconazole,simvastatin,precaution_emploi,moderate,precaution_emploi,Augmentation concentrations simvastatine par inhibition CYP3A4 — risque de rhabdomyolyse,"Utiliser doses plus faibles de simvastatine ou autre statine.",OpenFDA + ChEMBL

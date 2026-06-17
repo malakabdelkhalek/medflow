@@ -1,0 +1,6 @@
+molecule_a,molecule_b,severity_ansm,clinical_effect,management
+atorvastatin,itraconazole,contre_indique,Risque majoré de rhabdomyolyse (diminution métabolisme hépatique atorvastatine),Contre-indiqué
+simvastatin,clarithromycin,contre_indique,Risque majoré de rhabdomyolyse (diminution métabolisme hépatique — CYP3A4),Contre-indiqué
+atorvastatin,clarithromycin (macrolides puissants CYP3A4),precaution_emploi,Risque majoré de rhabdomyolyse (diminution métabolisme hépatique),"Utiliser doses plus faibles, si objectif non atteint utiliser autre statine non concernée"
+atorvastatin,erythromycin,precaution_emploi,Risque majoré de rhabdomyolyse (diminution métabolisme hépatique),"Utiliser doses plus faibles, si objectif non atteint utiliser autre statine non concernée"
+omeprazole,itraconazole,a_prendre_en_compte,Diminution absorption itraconazole par augmentation pH intragastrique,Surveillance

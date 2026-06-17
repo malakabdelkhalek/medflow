@@ -1,0 +1,5 @@
+molecule_a,molecule_b,severity_ansm,clinical_effect,management
+spironolactone,enalapril (spiro 12.5-50mg/j IC),precaution_emploi,Risque d'hyperkaliémie potentiellement létale,"Vérifier absence hyperkaliémie et IR, surveillance kaliémie+créatininémie 1x/semaine mois 1 puis 1x/mois"
+spironolactone,ramipril (spiro 12.5-50mg/j IC),precaution_emploi,Risque d'hyperkaliémie potentiellement létale,"Vérifier absence hyperkaliémie et IR, surveillance kaliémie+créatininémie 1x/semaine mois 1 puis 1x/mois"
+spironolactone,enalapril (hors IC ou dose >50mg),deconseillee,Risque d'hyperkaliémie potentiellement létale (addition effets hyperkaliémiants),"Si justifiée, contrôle strict kaliémie et fonction rénale"
+spironolactone,ramipril (hors IC ou dose >50mg),deconseillee,Risque d'hyperkaliémie potentiellement létale (addition effets hyperkaliémiants),"Si justifiée, contrôle strict kaliémie et fonction rénale"

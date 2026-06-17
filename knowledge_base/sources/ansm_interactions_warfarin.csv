@@ -1,0 +1,14 @@
+molecule_a,molecule_b,severity_ansm,clinical_effect,management
+warfarin,warfarin (other oral anticoagulants),a_prendre_en_compte,Risque de majoration des événements hémorragiques lors du relais,"Tenir compte de la demi-vie, observer un délai de carence, informer le patient"
+warfarin,aspirin (>=1g/prise ou >=3g/jour),contre_indique,Majoration du risque hémorragique,Contre-indiqué
+warfarin,aspirin (>=500mg sans antécédent ulcère),deconseillee,Majoration du risque hémorragique,Association déconseillée
+warfarin,aspirin (50-375mg/jour sans antécédent ulcère),a_prendre_en_compte,Majoration du risque hémorragique,Surveillance
+warfarin,aspirin (50-375mg/jour avec antécédent ulcère),deconseillee,Majoration du risque hémorragique,"Nécessité d'un contrôle, notamment du temps de saignement"
+warfarin,clopidogrel (antiagrégants plaquettaires),a_prendre_en_compte,Augmentation du risque hémorragique,Surveillance
+warfarin,ibuprofen (AINS),deconseillee,Augmentation du risque hémorragique (agression muqueuse gastroduodénale),"Si association inévitable, surveillance clinique étroite voire biologique"
+warfarin,diclofenac (AINS),deconseillee,Augmentation du risque hémorragique (agression muqueuse gastroduodénale),"Si association inévitable, surveillance clinique étroite voire biologique"
+warfarin,naproxen (AINS),deconseillee,Augmentation du risque hémorragique (agression muqueuse gastroduodénale),"Si association inévitable, surveillance clinique étroite voire biologique"
+warfarin,prednisolone (glucocorticoïdes),precaution_emploi,Impact sur métabolisme AVK et facteurs coagulation. Risque hémorragique propre corticothérapie,"Contrôle biologique J8, puis tous les 15 jours pendant et après corticothérapie"
+warfarin,heparin,contre_indique (AOD) / precaution_emploi (AVK),Augmentation du risque hémorragique,"AOD: ne pas administrer conjointement. AVK: respecter intervalle, renforcer surveillance"
+warfarin,fluoxetine (ISRS),a_prendre_en_compte,Augmentation du risque hémorragique,Surveillance
+warfarin,sertraline (ISRS),a_prendre_en_compte,Augmentation du risque hémorragique,Surveillance

@@ -4,4 +4,4 @@ __pycache__/
 *.pyo
 .venv/
 venv/
-knowledge_base/sources/
+# knowledge_base/sources/  # uncomment to ignore raw downloaded files

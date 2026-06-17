@@ -1,0 +1,15 @@
+molecule_a,molecule_b,severity_ansm,clinical_effect,management
+enalapril,aspirin (>=1g/prise ou >=500mg/prise),precaution_emploi,Insuffisance rénale aiguë chez patient à risque + réduction effet antihypertenseur,"Hydrater le patient, surveiller fonction rénale en début de traitement et régulièrement"
+ramipril,aspirin (>=1g/prise ou >=500mg/prise),precaution_emploi,Insuffisance rénale aiguë chez patient à risque + réduction effet antihypertenseur,"Hydrater le patient, surveiller fonction rénale en début de traitement et régulièrement"
+enalapril,ibuprofen (AINS),precaution_emploi,Insuffisance rénale aiguë chez patient à risque + réduction effet antihypertenseur,"Hydrater le patient, surveiller fonction rénale en début et régulièrement"
+ramipril,ibuprofen (AINS),precaution_emploi,Insuffisance rénale aiguë chez patient à risque + réduction effet antihypertenseur,"Hydrater le patient, surveiller fonction rénale en début et régulièrement"
+enalapril,diclofenac (AINS),precaution_emploi,Insuffisance rénale aiguë chez patient à risque + réduction effet antihypertenseur,"Hydrater le patient, surveiller fonction rénale en début et régulièrement"
+ramipril,diclofenac (AINS),precaution_emploi,Insuffisance rénale aiguë chez patient à risque + réduction effet antihypertenseur,"Hydrater le patient, surveiller fonction rénale en début et régulièrement"
+enalapril,spironolactone (>50mg/j hors IC),deconseillee,Risque d'hyperkaliémie potentiellement létale (addition des effets hyperkaliémiants),"Si justifiée, contrôle strict kaliémie et fonction rénale"
+ramipril,spironolactone (>50mg/j hors IC),deconseillee,Risque d'hyperkaliémie potentiellement létale (addition des effets hyperkaliémiants),"Si justifiée, contrôle strict kaliémie et fonction rénale"
+enalapril,spironolactone (12.5-50mg/j IC),precaution_emploi,Risque d'hyperkaliémie potentiellement létale,"Contrôle strict kaliémie et fonction rénale"
+ramipril,spironolactone (12.5-50mg/j IC),precaution_emploi,Risque d'hyperkaliémie potentiellement létale,"Contrôle strict kaliémie et fonction rénale"
+enalapril,furosemide (diurétiques hypokaliémiants),precaution_emploi,Risque d'hypotension artérielle brutale et/ou insuffisance rénale aiguë en cas de déplétion hydrosodée,"Arrêter diurétique avant IEC ou commencer par dose très faible IEC, surveiller créatininémie"
+ramipril,furosemide (diurétiques hypokaliémiants),precaution_emploi,Risque d'hypotension artérielle brutale et/ou insuffisance rénale aiguë en cas de déplétion hydrosodée,"Arrêter diurétique avant IEC ou commencer par dose très faible IEC, surveiller créatininémie"
+enalapril,insulin glargine,precaution_emploi,Majoration de l'effet hypoglycémiant de l'insuline (amélioration tolérance au glucose),Renforcer autosurveillance glycémique
+ramipril,insulin glargine,precaution_emploi,Majoration de l'effet hypoglycémiant de l'insuline (amélioration tolérance au glucose),Renforcer autosurveillance glycémique
