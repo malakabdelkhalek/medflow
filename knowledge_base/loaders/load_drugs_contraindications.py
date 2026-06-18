@@ -1,4 +1,7 @@
-import psycopg2, os
+import csv
+import os
+
+import psycopg2
 
 conn = psycopg2.connect(
     dbname=os.getenv("POSTGRES_DB", "medflow"),
@@ -7,6 +10,9 @@ conn = psycopg2.connect(
     host=os.getenv("POSTGRES_HOST", "localhost"),
 )
 cur = conn.cursor()
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+CLEAN_DIR = os.path.join(BASE_DIR, "../sources/clean")
 
 # ── drugs table (brand names + dose ranges) ──────────────────────────────────
 DRUGS = [
@@ -87,10 +93,102 @@ for (inn, icd11, condition, reason, source) in CONTRAINDICATIONS:
         VALUES (%s,%s,%s,%s,%s) ON CONFLICT DO NOTHING
     """, (drug[0], icd11, condition, reason, source))
 
+# allergy groups
+allergy_groups_path = os.path.join(CLEAN_DIR, "allergy_groups_clean.csv")
+if os.path.exists(allergy_groups_path):
+    with open(allergy_groups_path, newline="", encoding="utf-8-sig") as f:
+        allergy_groups = [
+            (row["name"], row.get("description", ""))
+            for row in csv.DictReader(f)
+        ]
+else:
+    allergy_groups = [
+        ("Penicillins", "Penicillin beta-lactam antibiotics"),
+        ("NSAIDs", "Non-steroidal anti-inflammatory drugs"),
+        ("Statins", "HMG-CoA reductase inhibitors (statins)"),
+    ]
+
+for name, desc in allergy_groups:
+    cur.execute("""
+        INSERT INTO allergy_groups (name, description)
+        VALUES (%s, %s)
+        ON CONFLICT (name) DO UPDATE SET description = EXCLUDED.description
+    """, (name, desc))
+
+# allergy cross-reactivity pairs
+cross_path = os.path.join(CLEAN_DIR, "allergy_cross_reactivities_clean.csv")
+if os.path.exists(cross_path):
+    with open(cross_path, newline="", encoding="utf-8-sig") as f:
+        for row in csv.DictReader(f):
+            cur.execute("SELECT id FROM allergy_groups WHERE name = %s", (row["group_a"],))
+            group_a = cur.fetchone()
+            cur.execute("SELECT id FROM allergy_groups WHERE name = %s", (row["group_b"],))
+            group_b = cur.fetchone()
+            if not group_a or not group_b:
+                continue
+
+            cur.execute("""
+                INSERT INTO allergy_cross_reactivities (group_a_id, group_b_id)
+                VALUES (%s, %s)
+                ON CONFLICT DO NOTHING
+            """, (group_a[0], group_b[0]))
+
+            if row.get("direction") == "bidirectional":
+                cur.execute("""
+                    INSERT INTO allergy_cross_reactivities (group_a_id, group_b_id)
+                    VALUES (%s, %s)
+                    ON CONFLICT DO NOTHING
+                """, (group_b[0], group_a[0]))
+
+# drug allergy group links
+drug_allergies_path = os.path.join(CLEAN_DIR, "drug_allergy_groups_clean.csv")
+if os.path.exists(drug_allergies_path):
+    with open(drug_allergies_path, newline="", encoding="utf-8-sig") as f:
+        drug_allergies = [
+            (row["canonical_inn"], row["allergy_group"])
+            for row in csv.DictReader(f)
+        ]
+else:
+    drug_allergies = [
+        ("amoxicillin", "Penicillins"),
+        ("aspirin", "NSAIDs"),
+        ("ibuprofen", "NSAIDs"),
+        ("diclofenac", "NSAIDs"),
+        ("naproxen", "NSAIDs"),
+        ("atorvastatin", "Statins"),
+        ("simvastatin", "Statins"),
+    ]
+
+for inn, group_name in drug_allergies:
+    cur.execute("SELECT id FROM allergy_groups WHERE name = %s", (group_name,))
+    group_row = cur.fetchone()
+    if not group_row:
+        continue
+    group_id = group_row[0]
+
+    cur.execute("""
+        SELECT d.id FROM drugs d
+        JOIN molecules m ON m.id = d.molecule_id
+        WHERE m.inn = %s
+    """, (inn,))
+    for drug_row in cur.fetchall():
+        cur.execute("""
+            INSERT INTO drug_allergy_groups (drug_id, allergy_group_id)
+            VALUES (%s, %s)
+            ON CONFLICT DO NOTHING
+        """, (drug_row[0], group_id))
+
 conn.commit()
 cur.execute("SELECT count(*) FROM drugs")
 print(f"Drugs loaded: {cur.fetchone()[0]}")
 cur.execute("SELECT count(*) FROM contraindications")
 print(f"Contraindications loaded: {cur.fetchone()[0]}")
+cur.execute("SELECT count(*) FROM allergy_groups")
+print(f"Allergy groups loaded: {cur.fetchone()[0]}")
+cur.execute("SELECT count(*) FROM drug_allergy_groups")
+print(f"Drug allergy group links loaded: {cur.fetchone()[0]}")
+cur.execute("SELECT count(*) FROM allergy_cross_reactivities")
+print(f"Allergy cross-reactivities loaded: {cur.fetchone()[0]}")
+
 cur.close()
 conn.close()

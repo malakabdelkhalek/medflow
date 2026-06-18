@@ -1,0 +1,4 @@
+﻿"group_a","group_b","direction","clinical_note","source","confidence"
+"Penicillins","Beta-lactams","bidirectional","Penicillin allergy is part of the broader beta-lactam allergy review space.","MedFlow clinical seed","high"
+"Penicillins","Cephalosporins","bidirectional","Cross-reactivity is possible, especially with immediate severe reactions or similar side chains; requires pharmacist review.","MedFlow clinical seed","moderate"
+"Salicylates","NSAIDs","bidirectional","Aspirin/salicylate hypersensitivity can cross-react with non-selective NSAIDs.","MedFlow clinical seed","high"

@@ -27,15 +27,14 @@ conn = psycopg2.connect(
 )
 cur = conn.cursor()
 
-csv_path = os.path.join(os.path.dirname(__file__), "../sources/pct_filtered_medicines.csv")
+csv_path = os.path.join(os.path.dirname(__file__), "../sources/clean/tunisian_brand_mapping_clean.csv")
 updated, skipped = 0, 0
 seen = set()  # keep first brand name per INN
 
 with open(csv_path, newline="", encoding="utf-8-sig") as f:
     for row in csv.DictReader(f):
-        inn_raw = row["INN (DCI)"].strip().lower()
-        brand = row["Brand Name"].strip()
-        inn = INN_MAP.get(inn_raw)
+        brand = row["brand_name"].strip()
+        inn = row["candidate_inn"].strip().lower()
         if not inn or inn in seen or not brand:
             skipped += 1
             continue

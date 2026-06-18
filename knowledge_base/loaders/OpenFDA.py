@@ -44,7 +44,7 @@ for drug in DRUGS:
     data = get_drug_data(drug)
     if data:
         results.append(data)
-        print(f"  ✓ Found")
+        print(f"  [OK] Found")
     else:
         results.append({
             "inn_name": drug,
@@ -54,7 +54,7 @@ for drug in DRUGS:
             "contraindications": "",
             "status": "NOT FOUND"
         })
-        print(f"  ✗ Not found")
+        print(f"  [FAIL] Not found")
     time.sleep(0.3)
 
 output_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../sources")

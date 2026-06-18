@@ -29,3 +29,20 @@ fluoxetine             4493          CHEMBL41         DB00472
 sertraline             36437         CHEMBL809        DB01104
 omeprazole             7646          CHEMBL1503       DB00338
 tramadol               10689         CHEMBL1237044    DB00193
+
+Notes
+-----
+DrugBank IDs above are historical/planned identifiers only. DrugBank is not currently used as a live source because the team could not obtain access for Tunisia.
+
+Current active sources:
+- PCT Tunisian human medicine catalogue: raw Tunisian market labels and brand candidates.
+- RxNorm: canonical CUI mapping and synonym support for priority molecules.
+- ChEMBL: CYP and molecule relationship data.
+- ANSM starter interaction CSV: curated Week 1 interaction set, pending full thesaurus parse.
+- OpenFDA: secondary warning/contraindication cross-check.
+
+Cleaned outputs live in:
+knowledge_base/sources/clean/
+
+See:
+docs/data_lake_pipeline.md

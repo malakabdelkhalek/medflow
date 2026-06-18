@@ -48,7 +48,7 @@ for drug in DRUGS:
             "all_synonyms": " | ".join(names),
             "status": "found"
         })
-        print(f"  ✓ CUI: {cui} — {len(names)} synonyms")
+        print(f"  [OK] CUI: {cui} - {len(names)} synonyms")
     else:
         results.append({
             "inn_name": drug,
@@ -56,7 +56,7 @@ for drug in DRUGS:
             "all_synonyms": "",
             "status": "NOT FOUND"
         })
-        print(f"  ✗ Not found")
+        print(f"  [FAIL] Not found")
     
     time.sleep(0.3)
 
