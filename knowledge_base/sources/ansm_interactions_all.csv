@@ -1,60 +1,18 @@
-molecule_a,molecule_b,severity_ansm,clinical_effect,management
-amlodipine,simvastatin,precaution_emploi,Risque majoré de rhabdomyolyse (diminution métabolisme hépatique simvastatine),Ne pas dépasser 20mg/j de simvastatine ou utiliser une autre statine non concernée
-clarithromycin,simvastatin,contre_indique,Risque majoré de rhabdomyolyse par inhibition CYP3A4,Contre-indiqué
-clarithromycin,atorvastatin,precaution_emploi,Risque majoré de rhabdomyolyse par inhibition CYP3A4,"Utiliser doses plus faibles, si objectif non atteint utiliser autre statine non concernée"
-clarithromycin,carbamazepine,deconseillee,Augmentation concentrations plasmatiques carbamazépine avec signes de surdosage par inhibition métabolisme hépatique,Association déconseillée
-fluconazole,rifabutine,precaution_emploi,Risque d'accroissement des effets indésirables de la rifabutine (uvéites) par augmentation concentrations et métabolite actif,"Surveillance clinique et biologique régulière, notamment en début d'association"
-carbamazepine,rifampicin,precaution_emploi,Diminution concentrations plasmatiques et efficacité carbamazépine par induction métabolisme hépatique par rifampicine,"Surveillance clinique, contrôle concentrations plasmatiques, adaptation posologie pendant et après rifampicine"
-valproate,rifampicin,deconseillee,Risque majoré de réactions cutanées graves (syndrome de Lyell),"Si association nécessaire, surveillance clinique étroite"
-fluoxetine,meqitazine,deconseillee,Risque de majoration des effets indésirables de la méquitazine par inhibition de son métabolisme,Association déconseillée
-fluoxetine,phenytoin,precaution_emploi,Augmentation concentrations plasmatiques phénytoïne avec signes de surdosage par inhibition métabolisme,"Surveillance clinique et éventuellement concentrations plasmatiques phénytoïne, adaptation posologique"
-omeprazole,tacrolimus,precaution_emploi,Augmentation concentrations sanguines du tacrolimus,"Dosage concentrations tacrolimus, contrôle fonction rénale, adaptation posologie"
-metronidazole,rifampicin,precaution_emploi,Diminution concentrations plasmatiques métronidazole par augmentation métabolisme hépatique par rifampicine,"Surveillance clinique, adaptation éventuelle posologie métronidazole pendant et après rifampicine"
-clopidogrel,aspirin (hors indications validées SCA),deconseillee,Majoration du risque hémorragique par addition des activités antiagrégantes,Association déconseillée hors SCA
-clopidogrel,aspirin (dans SCA indications validées),precaution_emploi,Majoration du risque hémorragique par addition des activités antiagrégantes,Surveillance clinique
-clopidogrel,paclitaxel,a_prendre_en_compte,Augmentation des concentrations du paclitaxel avec risque de majoration des effets indésirables,Surveillance
-clopidogrel,repaglinide,a_prendre_en_compte,Augmentation des concentrations du répaglinide avec risque de majoration des effets indésirables,Surveillance
-digoxin,dronedarone,deconseillee,Bradycardie excessive + troubles conduction AV + augmentation digoxinémie par inhibition métabolisme digoxine,"Réduire de moitié les doses de digoxine, surveillance clinique et ECG"
-digoxin,atorvastatin,deconseillee,Risque majoré de rhabdomyolyse (diminution métabolisme hépatique atorvastatine),"Utiliser doses plus faibles d'atorvastatine, si objectif non atteint utiliser autre statine"
-furosemide,metformin,precaution_emploi,Acidose lactique due à la metformine déclenchée par insuffisance rénale fonctionnelle liée aux diurétiques de l'anse,"Ne pas utiliser metformine si créatininémie >15mg/l (135μmol/l) homme, >12mg/l (110μmol/l) femme"
-furosemide,lithium,deconseillee,Augmentation de la lithémie avec signes de surdosage (diminution excrétion urinaire lithium),"Si association inévitable, surveillance stricte lithémie et adaptation posologie lithium"
-tramadol,fluoxetine,deconseillee,Risque de syndrome sérotoninergique (tramadol substrat CYP2D6 + activité sérotoninergique — fluoxétine inhibe CYP2D6 et recapture sérotonine),"Surveiller signes syndrome sérotoninergique (agitation, hyperthermie, tremblements). Eviter association."
-tramadol,sertraline,deconseillee,Risque de syndrome sérotoninergique,Surveiller signes syndrome sérotoninergique. Eviter association.
-fluconazole,warfarin,precaution_emploi,Augmentation significative du temps de prothrombine — fluconazole inhibe CYP2C9 métabolisme warfarine,"Contrôle INR plus fréquent, adapter posologie warfarine pendant et après fluconazole."
-fluconazole,simvastatin,precaution_emploi,Augmentation concentrations simvastatine par inhibition CYP3A4 — risque de rhabdomyolyse,Utiliser doses plus faibles de simvastatine ou autre statine.
-enalapril,aspirin (>=1g/prise ou >=500mg/prise),precaution_emploi,Insuffisance rénale aiguë chez patient à risque + réduction effet antihypertenseur,"Hydrater le patient, surveiller fonction rénale en début de traitement et régulièrement"
-ramipril,aspirin (>=1g/prise ou >=500mg/prise),precaution_emploi,Insuffisance rénale aiguë chez patient à risque + réduction effet antihypertenseur,"Hydrater le patient, surveiller fonction rénale en début de traitement et régulièrement"
-enalapril,ibuprofen (AINS),precaution_emploi,Insuffisance rénale aiguë chez patient à risque + réduction effet antihypertenseur,"Hydrater le patient, surveiller fonction rénale en début et régulièrement"
-ramipril,ibuprofen (AINS),precaution_emploi,Insuffisance rénale aiguë chez patient à risque + réduction effet antihypertenseur,"Hydrater le patient, surveiller fonction rénale en début et régulièrement"
-enalapril,diclofenac (AINS),precaution_emploi,Insuffisance rénale aiguë chez patient à risque + réduction effet antihypertenseur,"Hydrater le patient, surveiller fonction rénale en début et régulièrement"
-ramipril,diclofenac (AINS),precaution_emploi,Insuffisance rénale aiguë chez patient à risque + réduction effet antihypertenseur,"Hydrater le patient, surveiller fonction rénale en début et régulièrement"
-enalapril,spironolactone (>50mg/j hors IC),deconseillee,Risque d'hyperkaliémie potentiellement létale (addition des effets hyperkaliémiants),"Si justifiée, contrôle strict kaliémie et fonction rénale"
-ramipril,spironolactone (>50mg/j hors IC),deconseillee,Risque d'hyperkaliémie potentiellement létale (addition des effets hyperkaliémiants),"Si justifiée, contrôle strict kaliémie et fonction rénale"
-enalapril,spironolactone (12.5-50mg/j IC),precaution_emploi,Risque d'hyperkaliémie potentiellement létale,Contrôle strict kaliémie et fonction rénale
-ramipril,spironolactone (12.5-50mg/j IC),precaution_emploi,Risque d'hyperkaliémie potentiellement létale,Contrôle strict kaliémie et fonction rénale
-enalapril,furosemide (diurétiques hypokaliémiants),precaution_emploi,Risque d'hypotension artérielle brutale et/ou insuffisance rénale aiguë en cas de déplétion hydrosodée,"Arrêter diurétique avant IEC ou commencer par dose très faible IEC, surveiller créatininémie"
-ramipril,furosemide (diurétiques hypokaliémiants),precaution_emploi,Risque d'hypotension artérielle brutale et/ou insuffisance rénale aiguë en cas de déplétion hydrosodée,"Arrêter diurétique avant IEC ou commencer par dose très faible IEC, surveiller créatininémie"
-enalapril,insulin glargine,precaution_emploi,Majoration de l'effet hypoglycémiant de l'insuline (amélioration tolérance au glucose),Renforcer autosurveillance glycémique
-ramipril,insulin glargine,precaution_emploi,Majoration de l'effet hypoglycémiant de l'insuline (amélioration tolérance au glucose),Renforcer autosurveillance glycémique
-spironolactone,enalapril (spiro 12.5-50mg/j IC),precaution_emploi,Risque d'hyperkaliémie potentiellement létale,"Vérifier absence hyperkaliémie et IR, surveillance kaliémie+créatininémie 1x/semaine mois 1 puis 1x/mois"
-spironolactone,ramipril (spiro 12.5-50mg/j IC),precaution_emploi,Risque d'hyperkaliémie potentiellement létale,"Vérifier absence hyperkaliémie et IR, surveillance kaliémie+créatininémie 1x/semaine mois 1 puis 1x/mois"
-spironolactone,enalapril (hors IC ou dose >50mg),deconseillee,Risque d'hyperkaliémie potentiellement létale (addition effets hyperkaliémiants),"Si justifiée, contrôle strict kaliémie et fonction rénale"
-spironolactone,ramipril (hors IC ou dose >50mg),deconseillee,Risque d'hyperkaliémie potentiellement létale (addition effets hyperkaliémiants),"Si justifiée, contrôle strict kaliémie et fonction rénale"
-atorvastatin,itraconazole,contre_indique,Risque majoré de rhabdomyolyse (diminution métabolisme hépatique atorvastatine),Contre-indiqué
-simvastatin,clarithromycin,contre_indique,Risque majoré de rhabdomyolyse (diminution métabolisme hépatique — CYP3A4),Contre-indiqué
-atorvastatin,clarithromycin (macrolides puissants CYP3A4),precaution_emploi,Risque majoré de rhabdomyolyse (diminution métabolisme hépatique),"Utiliser doses plus faibles, si objectif non atteint utiliser autre statine non concernée"
-atorvastatin,erythromycin,precaution_emploi,Risque majoré de rhabdomyolyse (diminution métabolisme hépatique),"Utiliser doses plus faibles, si objectif non atteint utiliser autre statine non concernée"
-omeprazole,itraconazole,a_prendre_en_compte,Diminution absorption itraconazole par augmentation pH intragastrique,Surveillance
-warfarin,warfarin (other oral anticoagulants),a_prendre_en_compte,Risque de majoration des événements hémorragiques lors du relais,"Tenir compte de la demi-vie, observer un délai de carence, informer le patient"
-warfarin,aspirin (>=1g/prise ou >=3g/jour),contre_indique,Majoration du risque hémorragique,Contre-indiqué
-warfarin,aspirin (>=500mg sans antécédent ulcère),deconseillee,Majoration du risque hémorragique,Association déconseillée
-warfarin,aspirin (50-375mg/jour sans antécédent ulcère),a_prendre_en_compte,Majoration du risque hémorragique,Surveillance
-warfarin,aspirin (50-375mg/jour avec antécédent ulcère),deconseillee,Majoration du risque hémorragique,"Nécessité d'un contrôle, notamment du temps de saignement"
-warfarin,clopidogrel (antiagrégants plaquettaires),a_prendre_en_compte,Augmentation du risque hémorragique,Surveillance
-warfarin,ibuprofen (AINS),deconseillee,Augmentation du risque hémorragique (agression muqueuse gastroduodénale),"Si association inévitable, surveillance clinique étroite voire biologique"
-warfarin,diclofenac (AINS),deconseillee,Augmentation du risque hémorragique (agression muqueuse gastroduodénale),"Si association inévitable, surveillance clinique étroite voire biologique"
-warfarin,naproxen (AINS),deconseillee,Augmentation du risque hémorragique (agression muqueuse gastroduodénale),"Si association inévitable, surveillance clinique étroite voire biologique"
-warfarin,prednisolone (glucocorticoïdes),precaution_emploi,Impact sur métabolisme AVK et facteurs coagulation. Risque hémorragique propre corticothérapie,"Contrôle biologique J8, puis tous les 15 jours pendant et après corticothérapie"
-warfarin,heparin,contre_indique (AOD) / precaution_emploi (AVK),Augmentation du risque hémorragique,"AOD: ne pas administrer conjointement. AVK: respecter intervalle, renforcer surveillance"
-warfarin,fluoxetine (ISRS),a_prendre_en_compte,Augmentation du risque hémorragique,Surveillance
-warfarin,sertraline (ISRS),a_prendre_en_compte,Augmentation du risque hémorragique,Surveillance
+molecule_a,molecule_b,severity_ansm,severity_openfda,clinical_effect,management
+warfarin,aspirin,deconseillee,major,Increased risk of hemorrhage due to additive anticoagulant/antiplatelet effects and gastric mucosal irritation by aspirin.,"Avoid combination. If co-administration is necessary, monitor INR closely and check for clinical signs of bleeding."
+warfarin,heparin,precaution_emploi,major,Additive anticoagulant effect increases the risk of serious bleeding.,Monitor coagulation profiles (INR and aPTT) closely and adjust doses as needed.
+warfarin,clopidogrel,deconseillee,major,Increased risk of major bleeding due to combined antiplatelet and anticoagulant action.,Avoid co-prescription unless strictly indicated. Perform intensive clinical monitoring for bleeding signs.
+warfarin,ibuprofen,deconseillee,major,"NSAID inhibits platelet aggregation and damages gastric mucosa, dramatically raising gastrointestinal bleeding risk.",Avoid NSAIDs. Recommend acetaminophen/paracetamol for pain control instead.
+warfarin,diclofenac,deconseillee,major,NSAID platelet inhibition and mucosal damage increase bleeding risk.,Avoid combination. Monitor coagulation parameters and use alternative analgesics.
+warfarin,naproxen,deconseillee,major,Increased risk of GI bleeding and severe hemorrhage due to pharmacological synergy.,Contraindicated/deconseillee. Use alternative pain relievers and monitor INR.
+warfarin,fluconazole,deconseillee,major,"Fluconazole inhibits CYP2C9, which metabolizes the active S-warfarin, leading to warfarin accumulation and high bleeding risk.",Reduce warfarin dose by 30-50% when starting fluconazole. Monitor INR daily.
+warfarin,carbamazepine,precaution_emploi,major,"Carbamazepine induces CYP2C9 and CYP3A4, increasing warfarin clearance and reducing its anticoagulant efficacy.",Monitor INR and increase warfarin dosage as required during co-treatment. Monitor INR again upon carbamazepine discontinuation.
+simvastatin,clarithromycin,contre_indique,major,"Clarithromycin is a potent CYP3A4 inhibitor. It blocks simvastatin metabolism, increasing its exposure and risk of severe myopathy/rhabdomyolysis.",Absolute contraindication. Withhold simvastatin during the antibiotic course.
+fluoxetine,tramadol,deconseillee,major,"Risk of serotonin syndrome (agitation, muscle rigidity, hyperthermia) and increased risk of seizures. Fluoxetine also inhibits CYP2D6, lowering active tramadol levels.",Avoid combination. Monitor closely for serotonergic symptoms if co-prescribed.
+sertraline,tramadol,precaution_emploi,major,Increased risk of serotonin syndrome due to serotonin reuptake inhibition by both drugs.,"Monitor for mental status changes, autonomic instability, and neuromuscular hyperactivity."
+enalapril,spironolactone,precaution_emploi,major,"Risk of severe, life-threatening hyperkalemia, especially in patients with renal impairment.",Monitor serum potassium and creatinine regularly. Discontinue if potassium levels exceed 5.0 mEq/L.
+ramipril,spironolactone,precaution_emploi,major,Risk of severe hyperkalemia due to additive potassium-sparing effects.,Check potassium levels and renal function before and during treatment.
+digoxin,clarithromycin,precaution_emploi,major,"Clarithromycin inhibits P-gp, increasing digoxin bioavailability and decreasing its renal clearance, causing digitalis toxicity.","Reduce digoxin dosage, monitor serum digoxin levels, and monitor ECG for signs of toxicity."
+carbamazepine,clarithromycin,contre_indique,major,"Clarithromycin inhibits CYP3A4, causing a dramatic increase in carbamazepine plasma levels and risk of neurotoxicity.",Contraindicated. Use alternative antibiotic that does not inhibit CYP3A4 (e.g. amoxicillin).
+clopidogrel,omeprazole,a_prendre_en_compte,moderate,"Omeprazole inhibits CYP2C19, which is required to convert clopidogrel to its active metabolite, reducing its antiplatelet efficacy.",Avoid omeprazole. Use pantoprazole or famotidine instead as a gastric protectant.
+amlodipine,simvastatin,a_prendre_en_compte,moderate,"Amlodipine increases simvastatin exposure (via CYP3A4 inhibition), raising the risk of myopathy.",Limit Simvastatin dose to a maximum of 20mg/day when co-administered.
