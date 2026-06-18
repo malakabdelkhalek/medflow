@@ -1,142 +1,135 @@
-"""
-FIXED v3 — allergy drug contraindications extractor.
-
-ROOT CAUSE OF ALL FAILURES:
-  - MEDRT does NOT support EPC classes. 
-    MEDRT only covers: Disease, MoA, Chem, PE, PK.
-  - EPC classes require relaSource=FDASPL (or DAILYMED), not MEDRT.
-  - All N0000175XXX IDs were correct format but queried against wrong source.
-
-CORRECT COMBINATION:
-  classId=N0000XXXXXX  +  relaSource=FDASPL  +  rela=has_EPC  ✅
-  classId=N0000XXXXXX  +  relaSource=MEDRT   +  rela=has_EPC  ❌ (always empty)
-
-Class IDs verified from NIH MED-RT / FDA EPC vocabulary:
-  https://lhncbc.nlm.nih.gov/RxNav/APIs/api-RxClass.getClassMembers.html
-"""
-
 import csv
 import time
 import requests
 
-def extract_live_api_data(output_filename="allergy_drug_contraindications.csv"):
+BASE = "https://rxnav.nlm.nih.gov/REST/rxclass"
+HEADERS = {
+    "User-Agent": "Mozilla/5.0 (compatible; DrugPipeline/1.0)",
+    "Accept": "application/json",
+}
 
-    base_url = "https://rxnav.nlm.nih.gov/REST/rxclass/classMembers.json"
 
-    # ── CORRECT: relaSource=FDASPL for EPC classes ───────────────────────────
-    # IDs are FDA EPC NUIs from the MED-RT vocabulary.
-    # Verified at: https://rxnav.nlm.nih.gov/REST/rxclass/classMembers.json
-    #              ?classId=N0000175882&relaSource=FDASPL&rela=has_EPC  (tetracyclines — works)
-    allergy_groups = {
-        "Penicillins":                  ("N0000175503", "FDASPL"),  # Penicillin-class Antibacterial
-        "Cephalosporins":               ("N0000175911", "FDASPL"),  # Cephalosporin-class Antibacterial  
-        "Sulfonamides (Sulfa)":         ("N0000175913", "FDASPL"),  # Sulfonamide Antibacterial
-        "NSAIDs":                       ("N0000175722", "FDASPL"),  # Nonsteroidal Anti-inflammatory Drug
-        "Aspirin":                      ("N0000006947", "FDASPL"),  # Salicylate
-        "Fluoroquinolones":             ("N0000175706", "FDASPL"),  # Fluoroquinolone Antibacterial
-        "Macrolides":                   ("N0000175463", "FDASPL"),  # Macrolide Antibacterial
-        "Tetracyclines":                ("N0000175882", "FDASPL"),  # Tetracycline-class Drug (NIH example — confirmed working)
-        "Opioids":                      ("N0000175789", "FDASPL"),  # Opioid Agonist
-        "Statins (HMG-CoA Reductase)":  ("N0000175921", "FDASPL"),  # HMG-CoA Reductase Inhibitor
-        "ACE Inhibitors":               ("N0000029130", "FDASPL"),  # Angiotensin-Converting Enzyme Inhibitor
-        "Beta-Blockers":                ("N0000175561", "FDASPL"),  # beta-Adrenergic Blocker
-        "Benzodiazepines":              ("N0000175774", "FDASPL"),  # Benzodiazepine
-        "Aminoglycosides":              ("N0000175495", "FDASPL"),  # Aminoglycoside Antibacterial
-        "Contrast Media (Iodine)":      ("N0000175918", "DAILYMED"), # Iodinated Contrast Media (not in FDASPL)
-    }
+def fetch_all_epc_classes() -> list[dict]:
+    print("Step 1: Fetching all EPC class definitions...")
+    r = requests.get(
+        f"{BASE}/allClasses.json",
+        params={"classTypes": "EPC"},
+        headers=HEADERS,
+        timeout=30,
+    )
+    r.raise_for_status()
 
-    http_headers = {
-        "User-Agent": "Mozilla/5.0 (compatible; DrugPipeline/1.0)",
-        "Accept": "application/json",
-    }
+    data = r.json()
+    concept_list = data.get("rxclassMinConceptList", {})
+    classes = concept_list.get("rxclassMinConcept", [])
 
-    csv_headers = [
-        "Allergy_Group", "EPC_Class_ID", "RelaSource",
-        "Drug_Name", "RxCUI", "Drug_Type"
-    ]
-    records_written = 0
-    failed_groups = []
+    # Normalize: API returns dict when only 1 result, list otherwise
+    if isinstance(classes, dict):
+        classes = [classes]
 
-    print("Connecting to RxNav API...")
-    print(f"Fetching {len(allergy_groups)} allergy classes via FDASPL/EPC...\n")
+    # Keep only EPC type (safety filter)
+    epc_classes = [c for c in classes if c.get("classType") == "EPC"]
+    print(f"  → Found {len(epc_classes)} EPC classes\n")
+    return epc_classes
 
-    with open(output_filename, mode='w', newline='', encoding='utf-8') as file:
-        writer = csv.writer(file)
+
+def fetch_class_members(class_id: str) -> list[dict]:
+    for rela_source in ("FDASPL", "DAILYMED"):
+        r = requests.get(
+            f"{BASE}/classMembers.json",
+            params={
+                "classId":    class_id,
+                "relaSource": rela_source,
+                "rela":       "has_EPC",
+            },
+            headers=HEADERS,
+            timeout=15,
+        )
+
+        if r.status_code != 200:
+            continue
+
+        data = r.json()
+        group = data.get("drugMemberGroup", {})
+
+        # Empty list means no members for this source — try next
+        if not group or group == []:
+            continue
+
+        members = group.get("drugMember", [])
+        if not members:
+            continue
+
+        # API returns a dict (not list) when there's only 1 member
+        if isinstance(members, dict):
+            members = [members]
+
+        return [
+            {
+                "name":  m.get("minConcept", {}).get("name"),
+                "rxcui": m.get("minConcept", {}).get("rxcui"),
+                "tty":   m.get("minConcept", {}).get("tty", ""),
+            }
+            for m in members
+            if m.get("minConcept", {}).get("name") and m.get("minConcept", {}).get("rxcui")
+        ]
+
+    return []  # no members found in either source
+
+
+def extract_all_epc_drugs(output_filename="all_epc_allergy_groups.csv"):
+
+    # ── Step 1: get all class definitions 
+    epc_classes = fetch_all_epc_classes()
+
+    # ── Step 2: loop through each class 
+    csv_headers = ["EPC_Class_ID", "EPC_Class_Name", "Drug_Name", "RxCUI", "Drug_Type"]
+    total_drugs = 0
+    classes_with_drugs = 0
+    classes_empty = 0
+
+    print(f"Step 2: Fetching drug members for each EPC class...")
+    print(f"  (This will make ~{len(epc_classes)} API calls — estimated "
+          f"{len(epc_classes) * 0.35 / 60:.1f} minutes)\n")
+
+    with open(output_filename, mode="w", newline="", encoding="utf-8") as f:
+        writer = csv.writer(f)
         writer.writerow(csv_headers)
 
-        for group_name, (class_id, rela_source) in allergy_groups.items():
-            params = {
-                "classId":    class_id,
-                "relaSource": rela_source,   # ← FDASPL not MEDRT
-                "rela":       "has_EPC",
-            }
+        for i, epc_class in enumerate(epc_classes, 1):
+            class_id   = epc_class["classId"]
+            class_name = epc_class["className"]
 
-            try:
-                response = requests.get(
-                    base_url, params=params,
-                    headers=http_headers, timeout=15
-                )
+            members = fetch_class_members(class_id)
 
-                if response.status_code != 200:
-                    print(f"❌ HTTP {response.status_code} for {group_name}")
-                    failed_groups.append(group_name)
-                    continue
+            if members:
+                for drug in members:
+                    writer.writerow([
+                        class_id, class_name,
+                        drug["name"], drug["rxcui"], drug["tty"]
+                    ])
+                total_drugs += len(members)
+                classes_with_drugs += 1
+                status = f" {len(members):4d} drugs"
+            else:
+                classes_empty += 1
+                status = "  —  no members"
 
-                data = response.json()
-                drug_member_group = data.get("drugMemberGroup", {})
+            # Progress every 10 classes
+            if i % 10 == 0 or i == len(epc_classes):
+                print(f"  [{i:4d}/{len(epc_classes)}] {status}  ← {class_name}")
 
-                # API returns [] (empty list) when classId not found
-                if not drug_member_group or drug_member_group == []:
-                    print(f"⚠️  No results for {group_name} (classId={class_id})")
-                    failed_groups.append(group_name)
-                    continue
+            time.sleep(0.3)  # polite rate limiting — ~3 req/sec
 
-                drug_members = drug_member_group.get("drugMember", [])
-                if not drug_members:
-                    print(f"⚠️  Empty member list for {group_name}")
-                    continue
-
-                # API returns a dict (not list) when there's only 1 member
-                if isinstance(drug_members, dict):
-                    drug_members = [drug_members]
-
-                count = 0
-                for member in drug_members:
-                    concept   = member.get("minConcept", {})
-                    drug_name = concept.get("name")
-                    rxcui     = concept.get("rxcui")
-                    tty       = concept.get("tty", "")
-
-                    if drug_name and rxcui:
-                        writer.writerow([
-                            group_name, class_id, rela_source,
-                            drug_name, rxcui, tty
-                        ])
-                        records_written += 1
-                        count += 1
-
-                print(f"✅ {group_name:35s} → {count:4d} drugs  (classId={class_id})")
-
-            except requests.exceptions.Timeout:
-                print(f"❌ Timeout for {group_name}")
-                failed_groups.append(group_name)
-            except requests.exceptions.ConnectionError as e:
-                print(f"❌ Connection error for {group_name}: {e}")
-                failed_groups.append(group_name)
-            except Exception as e:
-                print(f"❌ Unexpected error for {group_name}: {e}")
-                import traceback; traceback.print_exc()
-                failed_groups.append(group_name)
-
-            time.sleep(0.3)   # polite rate limiting
-
-    print(f"\n{'─'*55}")
-    print(f"✅ Done — {records_written} records saved to '{output_filename}'")
-    if failed_groups:
-        print(f"⚠️  Failed groups ({len(failed_groups)}): {', '.join(failed_groups)}")
-        print("   → For failed groups, verify the class ID at:")
-        print("     https://mor.nlm.nih.gov/RxClass/  (search by class name)")
+    # ── Summary ───────────────────────────────────────────────────────────────
+    print(f"\n{'─'*60}")
+    print(f" Done!")
+    print(f"   EPC classes processed : {len(epc_classes)}")
+    print(f"   Classes with drugs    : {classes_with_drugs}")
+    print(f"   Classes with no drugs : {classes_empty}")
+    print(f"   Total drug records    : {total_drugs}")
+    print(f"   Output file           : {output_filename}")
 
 
 if __name__ == "__main__":
-    extract_live_api_data()
+    extract_all_epc_drugs()
