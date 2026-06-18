@@ -39,6 +39,8 @@ result = cur.fetchone()
 assert result is not None, "FAIL: warfarin-aspirin interaction not found in DB"
 severity, effect, management = result
 assert severity in ('contre-indique', 'contre-indiqué', 'major', 'deconseillee', 'déconseillée'), f"FAIL: unexpected severity '{severity}'"
+assert effect and effect.strip(), "FAIL: clinical effect is empty"
+assert management and management.strip(), "FAIL: management recommendation is empty"
 
 print(f"PASS  severity    : {severity}")
 print(f"      effect      : {effect}")
