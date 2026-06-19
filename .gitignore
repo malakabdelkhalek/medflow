@@ -5,4 +5,4 @@ __pycache__/
 .venv/
 venv/
 .vscode/
-# knowledge_base/sources/  # uncomment to ignore raw downloaded files
+knowledge_base/sources/dataset/*.csv
