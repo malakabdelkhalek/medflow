@@ -1,0 +1,31 @@
+rank,canonical_inn,rxnorm_cui,pct_match_count,selection_reason,selected_for_phase,needs_manual_review
+1,warfarin,11289,0,high-risk anticoagulant interactions,week1_30,true
+2,heparin,235473,1,high-risk anticoagulant interactions,week1_30,false
+3,aspirin,1191,14,antiplatelet bleeding risk,week1_30,false
+4,clopidogrel,236991,4,antiplatelet bleeding risk,week1_30,false
+5,metformin,235743,5,renal contraindication trap,week1_30,false
+6,glibenclamide,4815,5,hypoglycemia risk,week1_30,false
+7,insulin glargine,274783,1,hypoglycemia risk,week1_30,false
+8,enalapril,203123,0,ACE inhibitor renal/potassium risk,week1_30,true
+9,ramipril,35296,8,ACE inhibitor renal/potassium risk,week1_30,false
+10,amlodipine,104416,10,common cardiovascular drug,week1_30,false
+11,furosemide,4603,4,electrolyte/renal risk,week1_30,false
+12,spironolactone,9997,3,hyperkalemia risk,week1_30,false
+13,digoxin,3407,2,narrow therapeutic index,week1_30,false
+14,atorvastatin,83367,22,Tunisian brand duplication trap,week1_30,false
+15,simvastatin,36567,1,CYP3A4 inhibitor trap,week1_30,false
+16,ibuprofen,5640,0,NSAID bleeding/renal risk,week1_30,true
+17,diclofenac,3355,5,NSAID bleeding/renal risk,week1_30,false
+18,naproxen,7258,5,NSAID bleeding/renal risk,week1_30,false
+19,prednisolone,34372,2,steroid interaction risk,week1_30,false
+20,amoxicillin,133008,12,penicillin allergy trap,week1_30,false
+21,ciprofloxacin,235851,0,QT/CYP/renal concerns,week1_30,true
+22,metronidazole,103866,5,interaction-prone antimicrobial,week1_30,false
+23,clarithromycin,21212,4,strong CYP3A4 inhibitor trap,week1_30,false
+24,fluconazole,4450,0,CYP2C9 inhibitor trap,week1_30,true
+25,carbamazepine,2002,1,CYP inducer and neurologic risk,week1_30,false
+26,valproate,40254,6,neurologic and hepatic risk,week1_30,false
+27,fluoxetine,227224,0,serotonin syndrome trap,week1_30,true
+28,sertraline,155137,3,SSRI interaction risk,week1_30,false
+29,omeprazole,283742,3,common gastric/CYP interaction drug,week1_30,false
+30,tramadol,10689,4,serotonin syndrome trap,week1_30,false

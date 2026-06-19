@@ -6,3 +6,7 @@ __pycache__/
 venv/
 .vscode/
 # knowledge_base/sources/  # uncomment to ignore raw downloaded files
+knowledge_base/sources/dataset/interactions_enriched.csv
+knowledge_base/sources/dataset/interactions_fda_clean.csv
+knowledge_base/sources/dataset/interactions_grouped_by_class.csv
+knowledge_base/sources/dataset/toutes_les_interactions_fda.csv
