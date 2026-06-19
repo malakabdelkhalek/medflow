@@ -1,0 +1,504 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MedFlow Interaction Graph</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #f8fafc; color: #111827; font-family: Arial, sans-serif; }
+    header { padding: 16px 24px; border-bottom: 1px solid #d1d5db; background: white; }
+    h1 { margin: 0 0 6px; font-size: 22px; }
+    p { margin: 0; color: #475569; }
+    main { display: grid; grid-template-columns: minmax(620px, 1fr) 420px; min-height: calc(100vh - 78px); }
+    .canvas-panel { padding: 16px; }
+    .side-panel { border-left: 1px solid #d1d5db; background: white; padding: 16px; overflow: auto; max-height: calc(100vh - 78px); }
+    .toolbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 12px; }
+    .legend { display: flex; flex-wrap: wrap; gap: 8px; font-size: 12px; }
+    .legend span, .badge { display: inline-flex; align-items: center; border-radius: 4px; padding: 3px 7px; color: white; font-size: 11px; font-weight: 700; }
+    .contraindicated { background: #dc2626; }
+    .major { background: #ea580c; }
+    .moderate { background: #ca8a04; }
+    .minor { background: #16a34a; }
+    .unknown { background: #64748b; }
+    label { color: #334155; font-size: 13px; }
+    select { margin-left: 6px; padding: 5px 8px; border: 1px solid #cbd5e1; border-radius: 4px; background: white; }
+    svg { display: block; width: 100%; height: 680px; border: 1px solid #d1d5db; background: #ffffff; }
+    .edge { opacity: 0.35; }
+    .edge.active { opacity: 0.9; }
+    .node { stroke: #111827; stroke-width: 1; cursor: pointer; }
+    .node.dim, .edge.dim, .label.dim { opacity: 0.12; }
+    .label { fill: #111827; font-size: 10px; font-weight: 700; pointer-events: none; text-anchor: middle; }
+    h2 { margin: 0 0 10px; font-size: 16px; }
+    table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    th, td { border-bottom: 1px solid #e5e7eb; padding: 8px 6px; text-align: left; vertical-align: top; }
+    th { position: sticky; top: 0; background: white; color: #334155; }
+    tr:hover { background: #f1f5f9; }
+    .tip { position: fixed; display: none; max-width: 420px; padding: 10px 12px; background: #020617; border: 1px solid #475569; border-radius: 6px; color: #e5e7eb; font-size: 13px; }
+    @media (max-width: 1050px) {
+      main { grid-template-columns: 1fr; }
+      .side-panel { border-left: 0; border-top: 1px solid #d1d5db; max-height: none; }
+      svg { height: 560px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>MedFlow Drug Class Interaction Graph</h1>
+    <p>354 pharmacological classes, 2191 inferred class-to-class links. The page starts with the strongest 50 links to keep the view readable.</p>
+  </header>
+  <main>
+    <section class="canvas-panel">
+      <div class="toolbar">
+        <label>Show strongest links
+          <select id="limit">
+            <option value="25">25</option>
+            <option value="50" selected>50</option>
+            <option value="100">100</option>
+            <option value="150">150</option>
+          </select>
+        </label>
+        <div class="legend">
+          <span class="contraindicated">Contraindicated</span>
+          <span class="major">Major</span>
+          <span class="moderate">Moderate</span>
+          <span class="minor">Minor</span>
+          <span class="unknown">Unknown</span>
+        </div>
+      </div>
+      <svg viewBox="0 0 1000 820" role="img" aria-label="Drug class interaction graph"></svg>
+    </section>
+    <aside class="side-panel">
+      <h2>Top Inferred Interactions</h2>
+      <table>
+        <thead>
+          <tr><th>#</th><th>Class A</th><th>Class B</th><th>Severity</th><th>Weight</th><th>Evidence Drugs</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+          <td>1</td>
+          <td>Azole Antifungal</td>
+          <td>Kinase Inhibitor</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>11</td>
+          <td>bosutinib, erlotinib, everolimus, fluconazole, gefitinib, itraconazole, ketoconazole, nilotinib</td>
+        </tr>
+<tr>
+          <td>2</td>
+          <td>Anti-Epileptic Agent</td>
+          <td>Mood Stabilizer</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>10</td>
+          <td>carbamazepine, ethosuximide, felbamate, lamotrigine, methsuximide, oxcarbazepine, phenytoin, valproic</td>
+        </tr>
+<tr>
+          <td>3</td>
+          <td>Azole Antifungal</td>
+          <td>Nonsteroidal Anti-Inflammatory Drug</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>9</td>
+          <td>celecoxib, fluconazole, flurbiprofen, ibu, ibuprofen, ketoconazole, meloxicam, naproxen</td>
+        </tr>
+<tr>
+          <td>4</td>
+          <td>Histamine-2 Receptor Antagonist</td>
+          <td>Nonsteroidal Anti-Inflammatory Drug</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>9</td>
+          <td>aspirin, cimetidine, diflunisal, ibu, ibuprofen, indomethacin, meloxicam, nabumetone</td>
+        </tr>
+<tr>
+          <td>5</td>
+          <td>Calcineurin Inhibitor Immunosuppressant</td>
+          <td>Nonsteroidal Anti-Inflammatory Drug</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>9</td>
+          <td>aspirin, cyclosporine, ibu, indomethacin, ketoprofen, naproxen, piroxicam, sulindac</td>
+        </tr>
+<tr>
+          <td>6</td>
+          <td>Azole Antifungal</td>
+          <td>Corticosteroid</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>9</td>
+          <td>budesonide, dexamethasone, fluconazole, itraconazole, ketoconazole, methylprednisolone, posaconazole, prednisone</td>
+        </tr>
+<tr>
+          <td>7</td>
+          <td>Azole Antifungal</td>
+          <td>Dihydropyridine Calcium Channel Blocker</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>9</td>
+          <td>felodipine, fluconazole, isradipine, itraconazole, ketoconazole, nifedipine, nisoldipine, posaconazole</td>
+        </tr>
+<tr>
+          <td>8</td>
+          <td>Azole Antifungal</td>
+          <td>Calcineurin Inhibitor Immunosuppressant</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>8</td>
+          <td>clotrimazole, cyclosporine, fluconazole, itraconazole, ketoconazole, posaconazole, tacrolimus, voriconazole</td>
+        </tr>
+<tr>
+          <td>9</td>
+          <td>Human Immunodeficiency Virus 1 Non-Nucleoside Analog Reverse Transcriptase Inhibitor</td>
+          <td>Human Immunodeficiency Virus Nucleoside Analog Reverse Transcriptase Inhibitor</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>8</td>
+          <td>efavirenz, emtricitabine, emtricitabine and tenofovir disoproxil fumarate, nevirapine, retrovir, rilpivirine, tenofovir disoproxil fumarate, zidovudine</td>
+        </tr>
+<tr>
+          <td>10</td>
+          <td>Human Immunodeficiency Virus Nucleoside Analog Reverse Transcriptase Inhibitor</td>
+          <td>Rifamycin Antimycobacterial</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>8</td>
+          <td>biktarvy, emtricitabine, odefsey, retrovir, rifabutin, rilpivirine, tenofovir disoproxil fumarate, zidovudine</td>
+        </tr>
+<tr>
+          <td>11</td>
+          <td>Azole Antifungal</td>
+          <td>Benzodiazepine</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>7</td>
+          <td>alprazolam, clotrimazole, diazepam, fluconazole, itraconazole, ketoconazole, triazolam</td>
+        </tr>
+<tr>
+          <td>12</td>
+          <td>Benzodiazepine</td>
+          <td>Mood Stabilizer</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>7</td>
+          <td>alprazolam, carbamazepine, clobazam, clonazepam, diazepam, lorazepam, triazolam</td>
+        </tr>
+<tr>
+          <td>13</td>
+          <td>Anti-Epileptic Agent</td>
+          <td>Atypical Antipsychotic</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>7</td>
+          <td>clozapine, lamotrigine, olanzapine, phenytoin, quetiapine, valproic, valproic acid</td>
+        </tr>
+<tr>
+          <td>14</td>
+          <td>Atypical Antipsychotic</td>
+          <td>Mood Stabilizer</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>7</td>
+          <td>aripiprazole, carbamazepine, clozapine, olanzapine, paliperidone, quetiapine, risperidone</td>
+        </tr>
+<tr>
+          <td>15</td>
+          <td>Azole Antifungal</td>
+          <td>Hmg-Coa Reductase Inhibitor</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>7</td>
+          <td>itraconazole, ketoconazole, lovastatin, posaconazole, rosuvastatin, simvastatin, voriconazole</td>
+        </tr>
+<tr>
+          <td>16</td>
+          <td>Azole Antifungal</td>
+          <td>Human Immunodeficiency Virus Nucleoside Analog Reverse Transcriptase Inhibitor</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>7</td>
+          <td>fluconazole, itraconazole, ketoconazole, posaconazole, tenofovir disoproxil fumarate, voriconazole, zidovudine</td>
+        </tr>
+<tr>
+          <td>17</td>
+          <td>Azole Antifungal</td>
+          <td>Human Immunodeficiency Virus 1 Non-Nucleoside Analog Reverse Transcriptase Inhibitor</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>7</td>
+          <td>efavirenz, fluconazole, itraconazole, ketoconazole, nevirapine, posaconazole, voriconazole</td>
+        </tr>
+<tr>
+          <td>18</td>
+          <td>Alkylating Drug</td>
+          <td>Azole Antifungal</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>7</td>
+          <td>busulfan, cyclophosphamide, fluconazole, itraconazole, ketoconazole, posaconazole, voriconazole</td>
+        </tr>
+<tr>
+          <td>19</td>
+          <td>Hepatitis C Virus Ns5A Inhibitor</td>
+          <td>Human Immunodeficiency Virus Nucleoside Analog Reverse Transcriptase Inhibitor</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>7</td>
+          <td>emtricitabine, epclusa, harvoni, retrovir, rilpivirine, tenofovir disoproxil fumarate, truvada</td>
+        </tr>
+<tr>
+          <td>20</td>
+          <td>Anti-Epileptic Agent</td>
+          <td>Benzodiazepine</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>6</td>
+          <td>clonazepam, diazepam, felbamate, lamotrigine, lorazepam, phenytoin</td>
+        </tr>
+<tr>
+          <td>21</td>
+          <td>Angiotensin 2 Receptor Blocker</td>
+          <td>Thiazide Diuretic</td>
+          <td><span class="badge major">MAJOR</span></td>
+          <td>6</td>
+          <td>amlodipine, hydrochlorothiazide, irbesartan, irbesartan and hydrochlorothiazide, valsartan, valsartan and hydrochlorothiazide</td>
+        </tr>
+<tr>
+          <td>22</td>
+          <td>Anti-Epileptic Agent</td>
+          <td>Azole Antifungal</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>6</td>
+          <td>fluconazole, itraconazole, ketoconazole, phenytoin, posaconazole, voriconazole</td>
+        </tr>
+<tr>
+          <td>23</td>
+          <td>Azole Antifungal</td>
+          <td>Estrogen</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>6</td>
+          <td>estradiol, fluconazole, itraconazole, ketoconazole, levonorgestrel and ethinyl estradiol, voriconazole</td>
+        </tr>
+<tr>
+          <td>24</td>
+          <td>Azole Antifungal</td>
+          <td>Phosphodiesterase 5 Inhibitor</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>6</td>
+          <td>avanafil, fluconazole, itraconazole, ketoconazole, sildenafil, tadalafil</td>
+        </tr>
+<tr>
+          <td>25</td>
+          <td>Alkaloid</td>
+          <td>Azole Antifungal</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>6</td>
+          <td>colchicine, fluconazole, itraconazole, ketoconazole, posaconazole, voriconazole</td>
+        </tr>
+<tr>
+          <td>26</td>
+          <td>Azole Antifungal</td>
+          <td>Mtor Inhibitor Immunosuppressant</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>6</td>
+          <td>clotrimazole, fluconazole, itraconazole, ketoconazole, sirolimus, voriconazole</td>
+        </tr>
+<tr>
+          <td>27</td>
+          <td>Azole Antifungal</td>
+          <td>Cytochrome P450 3A Inhibitor</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>6</td>
+          <td>fluconazole, itraconazole, ketoconazole, posaconazole, ritonavir, voriconazole</td>
+        </tr>
+<tr>
+          <td>28</td>
+          <td>Azole Antifungal</td>
+          <td>Rifamycin Antimycobacterial</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>6</td>
+          <td>fluconazole, itraconazole, ketoconazole, posaconazole, rifabutin, voriconazole</td>
+        </tr>
+<tr>
+          <td>29</td>
+          <td>Azole Antifungal</td>
+          <td>Protease Inhibitor</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>6</td>
+          <td>darunavir, fluconazole, itraconazole, ketoconazole, posaconazole, voriconazole</td>
+        </tr>
+<tr>
+          <td>30</td>
+          <td>Anti-Epileptic Agent</td>
+          <td>Estrogen</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>6</td>
+          <td>estradiol, estrogens, felbamate, lamotrigine, oxcarbazepine, phenytoin</td>
+        </tr>
+<tr>
+          <td>31</td>
+          <td>Anti-Epileptic Agent</td>
+          <td>Dihydropyridine Calcium Channel Blocker</td>
+          <td><span class="badge major">MAJOR</span></td>
+          <td>6</td>
+          <td>nifedipine, nimodipine, nisoldipine, phenytoin, valproic, valproic acid</td>
+        </tr>
+<tr>
+          <td>32</td>
+          <td>Human Immunodeficiency Virus Nucleoside Analog Reverse Transcriptase Inhibitor</td>
+          <td>Proton Pump Inhibitor</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>6</td>
+          <td>dexlansoprazole, esomeprazole, lansoprazole, omeprazole, retrovir, rilpivirine</td>
+        </tr>
+<tr>
+          <td>33</td>
+          <td>Barbiturate</td>
+          <td>Central Nervous System Stimulant</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>6</td>
+          <td>acetaminophen, acetaminophen and caffeine, and caffeine, and codeine phosphate, butalbital, caffeine</td>
+        </tr>
+<tr>
+          <td>34</td>
+          <td>Cytochrome P450 3A Inhibitor</td>
+          <td>Human Immunodeficiency Virus Nucleoside Analog Reverse Transcriptase Inhibitor</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>6</td>
+          <td>emtricitabine, retrovir, rilpivirine, ritonavir, tenofovir disoproxil fumarate, zidovudine</td>
+        </tr>
+<tr>
+          <td>35</td>
+          <td>Human Immunodeficiency Virus Nucleoside Analog Reverse Transcriptase Inhibitor</td>
+          <td>Protease Inhibitor</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>6</td>
+          <td>darunavir, emtricitabine, retrovir, rilpivirine, tenofovir disoproxil fumarate, zidovudine</td>
+        </tr>
+<tr>
+          <td>36</td>
+          <td>Hepatitis B Virus Nucleoside Analog Reverse Transcriptase Inhibitor</td>
+          <td>Human Immunodeficiency Virus 1 Non-Nucleoside Analog Reverse Transcriptase Inhibitor</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>6</td>
+          <td>abacavir, efavirenz, entecavir, etravirine, lamivudine, nevirapine</td>
+        </tr>
+<tr>
+          <td>37</td>
+          <td>Anti-Epileptic Agent</td>
+          <td>Nonsteroidal Anti-Inflammatory Drug</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>5</td>
+          <td>aspirin, ibu, phenytoin, valproic, valproic acid</td>
+        </tr>
+<tr>
+          <td>38</td>
+          <td>Nonsteroidal Anti-Inflammatory Drug</td>
+          <td>Sulfonylurea</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>5</td>
+          <td>glimepiride, glipizide, glyburide, ibu, ibuprofen</td>
+        </tr>
+<tr>
+          <td>39</td>
+          <td>Corticosteroid</td>
+          <td>Cytochrome P450 3A Inhibitor</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>5</td>
+          <td>budesonide, dexamethasone, methylprednisolone, prednisone, ritonavir</td>
+        </tr>
+<tr>
+          <td>40</td>
+          <td>Atypical Antipsychotic</td>
+          <td>Benzodiazepine</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>5</td>
+          <td>alprazolam, clozapine, diazepam, lorazepam, onfi</td>
+        </tr>
+        </tbody>
+      </table>
+    </aside>
+  </main>
+  <div class="tip"></div>
+  <script>
+    const graph = {"summary": {"totalNodes": 354, "totalEdges": 2191, "shownEdges": 50}, "nodes": [{"id": "Nonsteroidal Anti-Inflammatory Drug", "drug_count": 839, "severity": "CONTRAINDICATED", "x": 860.0, "y": 440.0, "size": 34, "color": "#dc2626"}, {"id": "Corticosteroid", "drug_count": 789, "severity": "MAJOR", "x": 853.4943310145744, "y": 508.13044796974765, "size": 34, "color": "#ea580c"}, {"id": "Benzodiazepine", "drug_count": 474, "severity": "CONTRAINDICATED", "x": 834.2124558857861, "y": 573.7984840377179, "size": 28.77154105707724, "color": "#dc2626"}, {"id": "Thiazide Diuretic", "drug_count": 460, "severity": "MAJOR", "x": 802.8512718192253, "y": 634.6306942840151, "size": 28.447610589527216, "color": "#ea580c"}, {"id": "Atypical Antipsychotic", "drug_count": 355, "severity": "CONTRAINDICATED", "x": 760.5442537178253, "y": 688.4284441335603, "size": 25.841443681416774, "color": "#dc2626"}, {"id": "Azole Antifungal", "drug_count": 308, "severity": "CONTRAINDICATED", "x": 708.8204874456313, "y": 733.2473427381208, "size": 24.549928774784245, "color": "#dc2626"}, {"id": "Anti-Epileptic Agent", "drug_count": 290, "severity": "MAJOR", "x": 649.5494046806791, "y": 767.4675183276265, "size": 24.029386365926403, "color": "#ea580c"}, {"id": "Sulfonylurea", "drug_count": 247, "severity": "CONTRAINDICATED", "x": 584.8732167833938, "y": 789.852164596475, "size": 22.71623364550171, "color": "#dc2626"}, {"id": "Angiotensin 2 Receptor Blocker", "drug_count": 236, "severity": "CONTRAINDICATED", "x": 517.1294896965472, "y": 799.5922421058829, "size": 22.362291495737217, "color": "#dc2626"}, {"id": "Proton Pump Inhibitor", "drug_count": 218, "severity": "CONTRAINDICATED", "x": 448.7666582216174, "y": 796.3357190771358, "size": 21.7648230602334, "color": "#dc2626"}, {"id": "Hmg-Coa Reductase Inhibitor", "drug_count": 192, "severity": "CONTRAINDICATED", "x": 382.25553320572817, "y": 780.2002947372807, "size": 20.856406460551018, "color": "#dc2626"}, {"id": "Histamine-2 Receptor Antagonist", "drug_count": 185, "severity": "MAJOR", "x": 320.0000000000001, "y": 751.7691453623979, "size": 20.601470508735446, "color": "#ea580c"}, {"id": "Estrogen", "drug_count": 150, "severity": "CONTRAINDICATED", "x": 264.2501357796974, "y": 712.0698467675329, "size": 19.24744871391589, "color": "#dc2626"}, {"id": "Phosphodiesterase 5 Inhibitor", "drug_count": 140, "severity": "CONTRAINDICATED", "x": 217.02088589259648, "y": 662.5372350394179, "size": 18.83215956619923, "color": "#dc2626"}, {"id": "Dihydropyridine Calcium Channel Blocker", "drug_count": 118, "severity": "MAJOR", "x": 180.01923848422757, "y": 604.9615478218677, "size": 17.862780491200215, "color": "#ea580c"}, {"id": "Kinase Inhibitor", "drug_count": 89, "severity": "CONTRAINDICATED", "x": 154.582529498781, "y": 541.4237204629148, "size": 16.4339811320566, "color": "#dc2626"}, {"id": "Mood Stabilizer", "drug_count": 85, "severity": "CONTRAINDICATED", "x": 141.63010787368955, "y": 474.22017558950586, "size": 16.219544457292887, "color": "#dc2626"}, {"id": "Barbiturate", "drug_count": 80, "severity": "CONTRAINDICATED", "x": 141.63010787368955, "y": 405.77982441049426, "size": 15.94427190999916, "color": "#dc2626"}, {"id": "Alkaloid", "drug_count": 59, "severity": "CONTRAINDICATED", "x": 154.5825294987809, "y": 338.5762795370854, "size": 14.681145747868609, "color": "#dc2626"}, {"id": "Human Immunodeficiency Virus Nucleoside Analog Reverse Transcriptase Inhibitor", "drug_count": 49, "severity": "CONTRAINDICATED", "x": 180.01923848422746, "y": 275.03845217813245, "size": 14.0, "color": "#dc2626"}, {"id": "Human Immunodeficiency Virus 1 Non-Nucleoside Analog Reverse Transcriptase Inhibitor", "drug_count": 46, "severity": "CONTRAINDICATED", "x": 217.02088589259654, "y": 217.4627649605821, "size": 13.782329983125269, "color": "#dc2626"}, {"id": "Hepatitis B Virus Nucleoside Analog Reverse Transcriptase Inhibitor", "drug_count": 44, "severity": "CONTRAINDICATED", "x": 264.2501357796974, "y": 167.93015323246692, "size": 13.6332495807108, "color": "#dc2626"}, {"id": "Macrolide Antimicrobial", "drug_count": 43, "severity": "CONTRAINDICATED", "x": 319.99999999999983, "y": 128.2308546376022, "size": 13.557438524302, "color": "#dc2626"}, {"id": "Alkylating Drug", "drug_count": 41, "severity": "MAJOR", "x": 382.2555332057281, "y": 99.79970526271939, "size": 13.403124237432849, "color": "#ea580c"}, {"id": "Mtor Inhibitor Immunosuppressant", "drug_count": 28, "severity": "CONTRAINDICATED", "x": 448.7666582216173, "y": 83.66428092286424, "size": 12.291502622129181, "color": "#dc2626"}, {"id": "Cytochrome P450 3A Inhibitor", "drug_count": 21, "severity": "CONTRAINDICATED", "x": 517.1294896965472, "y": 80.40775789411714, "size": 11.582575694955839, "color": "#dc2626"}, {"id": "Glinide", "drug_count": 19, "severity": "UNKNOWN", "x": 584.8732167833939, "y": 90.147835403525, "size": 11.358898943540673, "color": "#64748b"}, {"id": "Progestin", "drug_count": 19, "severity": "MODERATE", "x": 649.549404680679, "y": 112.53248167237331, "size": 11.358898943540673, "color": "#ca8a04"}, {"id": "Calcineurin Inhibitor Immunosuppressant", "drug_count": 17, "severity": "CONTRAINDICATED", "x": 708.8204874456312, "y": 146.7526572618791, "size": 11.123105625617661, "color": "#dc2626"}, {"id": "Central Nervous System Stimulant", "drug_count": 14, "severity": "CONTRAINDICATED", "x": 760.5442537178253, "y": 191.57155586643967, "size": 10.74165738677394, "color": "#dc2626"}, {"id": "Rifamycin Antimycobacterial", "drug_count": 9, "severity": "CONTRAINDICATED", "x": 802.8512718192251, "y": 245.36930571598464, "size": 10.0, "color": "#dc2626"}, {"id": "Protease Inhibitor", "drug_count": 8, "severity": "CONTRAINDICATED", "x": 834.2124558857861, "y": 306.20151596228186, "size": 9.82842712474619, "color": "#dc2626"}, {"id": "Hepatitis C Virus Ns5A Inhibitor", "drug_count": 4, "severity": "CONTRAINDICATED", "x": 853.4943310145743, "y": 371.8695520302522, "size": 9.0, "color": "#dc2626"}], "edges": [{"source": "Azole Antifungal", "target": "Kinase Inhibitor", "weight": 11, "severity": "CONTRAINDICATED", "shared_drugs": "bosutinib, erlotinib, everolimus, fluconazole, gefitinib, itraconazole, ketoconazole, nilotinib", "width": 3.4849066497880004, "color": "#dc2626"}, {"source": "Anti-Epileptic Agent", "target": "Mood Stabilizer", "weight": 10, "severity": "CONTRAINDICATED", "shared_drugs": "carbamazepine, ethosuximide, felbamate, lamotrigine, methsuximide, oxcarbazepine, phenytoin, valproic", "width": 3.3978952727983707, "color": "#dc2626"}, {"source": "Azole Antifungal", "target": "Nonsteroidal Anti-Inflammatory Drug", "weight": 9, "severity": "CONTRAINDICATED", "shared_drugs": "celecoxib, fluconazole, flurbiprofen, ibu, ibuprofen, ketoconazole, meloxicam, naproxen", "width": 3.302585092994046, "color": "#dc2626"}, {"source": "Histamine-2 Receptor Antagonist", "target": "Nonsteroidal Anti-Inflammatory Drug", "weight": 9, "severity": "CONTRAINDICATED", "shared_drugs": "aspirin, cimetidine, diflunisal, ibu, ibuprofen, indomethacin, meloxicam, nabumetone", "width": 3.302585092994046, "color": "#dc2626"}, {"source": "Calcineurin Inhibitor Immunosuppressant", "target": "Nonsteroidal Anti-Inflammatory Drug", "weight": 9, "severity": "CONTRAINDICATED", "shared_drugs": "aspirin, cyclosporine, ibu, indomethacin, ketoprofen, naproxen, piroxicam, sulindac", "width": 3.302585092994046, "color": "#dc2626"}, {"source": "Azole Antifungal", "target": "Corticosteroid", "weight": 9, "severity": "CONTRAINDICATED", "shared_drugs": "budesonide, dexamethasone, fluconazole, itraconazole, ketoconazole, methylprednisolone, posaconazole, prednisone", "width": 3.302585092994046, "color": "#dc2626"}, {"source": "Azole Antifungal", "target": "Dihydropyridine Calcium Channel Blocker", "weight": 9, "severity": "CONTRAINDICATED", "shared_drugs": "felodipine, fluconazole, isradipine, itraconazole, ketoconazole, nifedipine, nisoldipine, posaconazole", "width": 3.302585092994046, "color": "#dc2626"}, {"source": "Azole Antifungal", "target": "Calcineurin Inhibitor Immunosuppressant", "weight": 8, "severity": "CONTRAINDICATED", "shared_drugs": "clotrimazole, cyclosporine, fluconazole, itraconazole, ketoconazole, posaconazole, tacrolimus, voriconazole", "width": 3.1972245773362196, "color": "#dc2626"}, {"source": "Human Immunodeficiency Virus 1 Non-Nucleoside Analog Reverse Transcriptase Inhibitor", "target": "Human Immunodeficiency Virus Nucleoside Analog Reverse Transcriptase Inhibitor", "weight": 8, "severity": "CONTRAINDICATED", "shared_drugs": "efavirenz, emtricitabine, emtricitabine and tenofovir disoproxil fumarate, nevirapine, retrovir, rilpivirine, tenofovir disoproxil fumarate, zidovudine", "width": 3.1972245773362196, "color": "#dc2626"}, {"source": "Human Immunodeficiency Virus Nucleoside Analog Reverse Transcriptase Inhibitor", "target": "Rifamycin Antimycobacterial", "weight": 8, "severity": "CONTRAINDICATED", "shared_drugs": "biktarvy, emtricitabine, odefsey, retrovir, rifabutin, rilpivirine, tenofovir disoproxil fumarate, zidovudine", "width": 3.1972245773362196, "color": "#dc2626"}, {"source": "Azole Antifungal", "target": "Benzodiazepine", "weight": 7, "severity": "CONTRAINDICATED", "shared_drugs": "alprazolam, clotrimazole, diazepam, fluconazole, itraconazole, ketoconazole, triazolam", "width": 3.0794415416798357, "color": "#dc2626"}, {"source": "Benzodiazepine", "target": "Mood Stabilizer", "weight": 7, "severity": "CONTRAINDICATED", "shared_drugs": "alprazolam, carbamazepine, clobazam, clonazepam, diazepam, lorazepam, triazolam", "width": 3.0794415416798357, "color": "#dc2626"}, {"source": "Anti-Epileptic Agent", "target": "Atypical Antipsychotic", "weight": 7, "severity": "CONTRAINDICATED", "shared_drugs": "clozapine, lamotrigine, olanzapine, phenytoin, quetiapine, valproic, valproic acid", "width": 3.0794415416798357, "color": "#dc2626"}, {"source": "Atypical Antipsychotic", "target": "Mood Stabilizer", "weight": 7, "severity": "CONTRAINDICATED", "shared_drugs": "aripiprazole, carbamazepine, clozapine, olanzapine, paliperidone, quetiapine, risperidone", "width": 3.0794415416798357, "color": "#dc2626"}, {"source": "Azole Antifungal", "target": "Hmg-Coa Reductase Inhibitor", "weight": 7, "severity": "CONTRAINDICATED", "shared_drugs": "itraconazole, ketoconazole, lovastatin, posaconazole, rosuvastatin, simvastatin, voriconazole", "width": 3.0794415416798357, "color": "#dc2626"}, {"source": "Azole Antifungal", "target": "Human Immunodeficiency Virus Nucleoside Analog Reverse Transcriptase Inhibitor", "weight": 7, "severity": "CONTRAINDICATED", "shared_drugs": "fluconazole, itraconazole, ketoconazole, posaconazole, tenofovir disoproxil fumarate, voriconazole, zidovudine", "width": 3.0794415416798357, "color": "#dc2626"}, {"source": "Azole Antifungal", "target": "Human Immunodeficiency Virus 1 Non-Nucleoside Analog Reverse Transcriptase Inhibitor", "weight": 7, "severity": "CONTRAINDICATED", "shared_drugs": "efavirenz, fluconazole, itraconazole, ketoconazole, nevirapine, posaconazole, voriconazole", "width": 3.0794415416798357, "color": "#dc2626"}, {"source": "Alkylating Drug", "target": "Azole Antifungal", "weight": 7, "severity": "CONTRAINDICATED", "shared_drugs": "busulfan, cyclophosphamide, fluconazole, itraconazole, ketoconazole, posaconazole, voriconazole", "width": 3.0794415416798357, "color": "#dc2626"}, {"source": "Hepatitis C Virus Ns5A Inhibitor", "target": "Human Immunodeficiency Virus Nucleoside Analog Reverse Transcriptase Inhibitor", "weight": 7, "severity": "CONTRAINDICATED", "shared_drugs": "emtricitabine, epclusa, harvoni, retrovir, rilpivirine, tenofovir disoproxil fumarate, truvada", "width": 3.0794415416798357, "color": "#dc2626"}, {"source": "Anti-Epileptic Agent", "target": "Benzodiazepine", "weight": 6, "severity": "CONTRAINDICATED", "shared_drugs": "clonazepam, diazepam, felbamate, lamotrigine, lorazepam, phenytoin", "width": 2.9459101490553135, "color": "#dc2626"}, {"source": "Angiotensin 2 Receptor Blocker", "target": "Thiazide Diuretic", "weight": 6, "severity": "MAJOR", "shared_drugs": "amlodipine, hydrochlorothiazide, irbesartan, irbesartan and hydrochlorothiazide, valsartan, valsartan and hydrochlorothiazide", "width": 2.9459101490553135, "color": "#ea580c"}, {"source": "Anti-Epileptic Agent", "target": "Azole Antifungal", "weight": 6, "severity": "CONTRAINDICATED", "shared_drugs": "fluconazole, itraconazole, ketoconazole, phenytoin, posaconazole, voriconazole", "width": 2.9459101490553135, "color": "#dc2626"}, {"source": "Azole Antifungal", "target": "Estrogen", "weight": 6, "severity": "CONTRAINDICATED", "shared_drugs": "estradiol, fluconazole, itraconazole, ketoconazole, levonorgestrel and ethinyl estradiol, voriconazole", "width": 2.9459101490553135, "color": "#dc2626"}, {"source": "Azole Antifungal", "target": "Phosphodiesterase 5 Inhibitor", "weight": 6, "severity": "CONTRAINDICATED", "shared_drugs": "avanafil, fluconazole, itraconazole, ketoconazole, sildenafil, tadalafil", "width": 2.9459101490553135, "color": "#dc2626"}, {"source": "Alkaloid", "target": "Azole Antifungal", "weight": 6, "severity": "CONTRAINDICATED", "shared_drugs": "colchicine, fluconazole, itraconazole, ketoconazole, posaconazole, voriconazole", "width": 2.9459101490553135, "color": "#dc2626"}, {"source": "Azole Antifungal", "target": "Mtor Inhibitor Immunosuppressant", "weight": 6, "severity": "CONTRAINDICATED", "shared_drugs": "clotrimazole, fluconazole, itraconazole, ketoconazole, sirolimus, voriconazole", "width": 2.9459101490553135, "color": "#dc2626"}, {"source": "Azole Antifungal", "target": "Cytochrome P450 3A Inhibitor", "weight": 6, "severity": "CONTRAINDICATED", "shared_drugs": "fluconazole, itraconazole, ketoconazole, posaconazole, ritonavir, voriconazole", "width": 2.9459101490553135, "color": "#dc2626"}, {"source": "Azole Antifungal", "target": "Rifamycin Antimycobacterial", "weight": 6, "severity": "CONTRAINDICATED", "shared_drugs": "fluconazole, itraconazole, ketoconazole, posaconazole, rifabutin, voriconazole", "width": 2.9459101490553135, "color": "#dc2626"}, {"source": "Azole Antifungal", "target": "Protease Inhibitor", "weight": 6, "severity": "CONTRAINDICATED", "shared_drugs": "darunavir, fluconazole, itraconazole, ketoconazole, posaconazole, voriconazole", "width": 2.9459101490553135, "color": "#dc2626"}, {"source": "Anti-Epileptic Agent", "target": "Estrogen", "weight": 6, "severity": "CONTRAINDICATED", "shared_drugs": "estradiol, estrogens, felbamate, lamotrigine, oxcarbazepine, phenytoin", "width": 2.9459101490553135, "color": "#dc2626"}, {"source": "Anti-Epileptic Agent", "target": "Dihydropyridine Calcium Channel Blocker", "weight": 6, "severity": "MAJOR", "shared_drugs": "nifedipine, nimodipine, nisoldipine, phenytoin, valproic, valproic acid", "width": 2.9459101490553135, "color": "#ea580c"}, {"source": "Human Immunodeficiency Virus Nucleoside Analog Reverse Transcriptase Inhibitor", "target": "Proton Pump Inhibitor", "weight": 6, "severity": "CONTRAINDICATED", "shared_drugs": "dexlansoprazole, esomeprazole, lansoprazole, omeprazole, retrovir, rilpivirine", "width": 2.9459101490553135, "color": "#dc2626"}, {"source": "Barbiturate", "target": "Central Nervous System Stimulant", "weight": 6, "severity": "CONTRAINDICATED", "shared_drugs": "acetaminophen, acetaminophen and caffeine, and caffeine, and codeine phosphate, butalbital, caffeine", "width": 2.9459101490553135, "color": "#dc2626"}, {"source": "Cytochrome P450 3A Inhibitor", "target": "Human Immunodeficiency Virus Nucleoside Analog Reverse Transcriptase Inhibitor", "weight": 6, "severity": "CONTRAINDICATED", "shared_drugs": "emtricitabine, retrovir, rilpivirine, ritonavir, tenofovir disoproxil fumarate, zidovudine", "width": 2.9459101490553135, "color": "#dc2626"}, {"source": "Human Immunodeficiency Virus Nucleoside Analog Reverse Transcriptase Inhibitor", "target": "Protease Inhibitor", "weight": 6, "severity": "CONTRAINDICATED", "shared_drugs": "darunavir, emtricitabine, retrovir, rilpivirine, tenofovir disoproxil fumarate, zidovudine", "width": 2.9459101490553135, "color": "#dc2626"}, {"source": "Hepatitis B Virus Nucleoside Analog Reverse Transcriptase Inhibitor", "target": "Human Immunodeficiency Virus 1 Non-Nucleoside Analog Reverse Transcriptase Inhibitor", "weight": 6, "severity": "CONTRAINDICATED", "shared_drugs": "abacavir, efavirenz, entecavir, etravirine, lamivudine, nevirapine", "width": 2.9459101490553135, "color": "#dc2626"}, {"source": "Anti-Epileptic Agent", "target": "Nonsteroidal Anti-Inflammatory Drug", "weight": 5, "severity": "CONTRAINDICATED", "shared_drugs": "aspirin, ibu, phenytoin, valproic, valproic acid", "width": 2.791759469228055, "color": "#dc2626"}, {"source": "Nonsteroidal Anti-Inflammatory Drug", "target": "Sulfonylurea", "weight": 5, "severity": "CONTRAINDICATED", "shared_drugs": "glimepiride, glipizide, glyburide, ibu, ibuprofen", "width": 2.791759469228055, "color": "#dc2626"}, {"source": "Corticosteroid", "target": "Cytochrome P450 3A Inhibitor", "weight": 5, "severity": "CONTRAINDICATED", "shared_drugs": "budesonide, dexamethasone, methylprednisolone, prednisone, ritonavir", "width": 2.791759469228055, "color": "#dc2626"}, {"source": "Atypical Antipsychotic", "target": "Benzodiazepine", "weight": 5, "severity": "CONTRAINDICATED", "shared_drugs": "alprazolam, clozapine, diazepam, lorazepam, onfi", "width": 2.791759469228055, "color": "#dc2626"}, {"source": "Benzodiazepine", "target": "Histamine-2 Receptor Antagonist", "weight": 5, "severity": "CONTRAINDICATED", "shared_drugs": "cimetidine, diazepam, lorazepam, ranitidine, triazolam", "width": 2.791759469228055, "color": "#dc2626"}, {"source": "Benzodiazepine", "target": "Macrolide Antimicrobial", "weight": 5, "severity": "CONTRAINDICATED", "shared_drugs": "alprazolam, clarithromycin, lorazepam, temazepam, triazolam", "width": 2.791759469228055, "color": "#dc2626"}, {"source": "Benzodiazepine", "target": "Cytochrome P450 3A Inhibitor", "weight": 5, "severity": "CONTRAINDICATED", "shared_drugs": "clonazepam, diazepam, estazolam, ritonavir, triazolam", "width": 2.791759469228055, "color": "#dc2626"}, {"source": "Nonsteroidal Anti-Inflammatory Drug", "target": "Thiazide Diuretic", "weight": 5, "severity": "MAJOR", "shared_drugs": "aspirin, ibu, indomethacin, naproxen, sulindac", "width": 2.791759469228055, "color": "#ea580c"}, {"source": "Atypical Antipsychotic", "target": "Azole Antifungal", "weight": 5, "severity": "CONTRAINDICATED", "shared_drugs": "aripiprazole, itraconazole, ketoconazole, quetiapine, risperidone", "width": 2.791759469228055, "color": "#dc2626"}, {"source": "Azole Antifungal", "target": "Sulfonylurea", "weight": 5, "severity": "CONTRAINDICATED", "shared_drugs": "diflucan, fluconazole, glipizide, glyburide, voriconazole", "width": 2.791759469228055, "color": "#dc2626"}, {"source": "Azole Antifungal", "target": "Proton Pump Inhibitor", "weight": 5, "severity": "CONTRAINDICATED", "shared_drugs": "esomeprazole, itraconazole, ketoconazole, omeprazole, voriconazole", "width": 2.791759469228055, "color": "#dc2626"}, {"source": "Azole Antifungal", "target": "Mood Stabilizer", "weight": 5, "severity": "CONTRAINDICATED", "shared_drugs": "carbamazepine, fluconazole, itraconazole, ketoconazole, voriconazole", "width": 2.791759469228055, "color": "#dc2626"}, {"source": "Azole Antifungal", "target": "Glinide", "weight": 5, "severity": "CONTRAINDICATED", "shared_drugs": "fluconazole, itraconazole, ketoconazole, repaglinide, voriconazole", "width": 2.791759469228055, "color": "#dc2626"}, {"source": "Azole Antifungal", "target": "Progestin", "weight": 5, "severity": "CONTRAINDICATED", "shared_drugs": "fluconazole, itraconazole, ketoconazole, norethindrone, voriconazole", "width": 2.791759469228055, "color": "#dc2626"}]};
+    const svg = document.querySelector("svg");
+    const tip = document.querySelector(".tip");
+    const limitSelect = document.querySelector("#limit");
+
+    function render(limit) {
+      svg.innerHTML = "";
+      const edges = graph.edges.slice(0, limit);
+      const visible = new Set();
+      for (const edge of edges) {
+        visible.add(edge.source);
+        visible.add(edge.target);
+      }
+      const nodes = graph.nodes.filter(node => visible.has(node.id));
+      const byId = new Map(nodes.map(n => [n.id, n]));
+
+      for (const e of edges) {
+      const a = byId.get(e.source);
+      const b = byId.get(e.target);
+      if (!a || !b) continue;
+      const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      line.setAttribute("x1", a.x);
+      line.setAttribute("y1", a.y);
+      line.setAttribute("x2", b.x);
+      line.setAttribute("y2", b.y);
+      line.setAttribute("stroke", e.color);
+      line.setAttribute("stroke-width", e.width);
+      line.classList.add("edge");
+      line.addEventListener("mousemove", event => showTip(event, `<b>${escapeHtml(e.source)} ↔ ${escapeHtml(e.target)}</b><br>Severity: ${e.severity}<br>Weight: ${e.weight}<br>Shared drugs: ${escapeHtml(e.shared_drugs || "n/a")}`));
+      line.addEventListener("mouseleave", hideTip);
+      line.dataset.source = e.source;
+      line.dataset.target = e.target;
+      svg.appendChild(line);
+    }
+
+      for (const n of nodes) {
+      const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      circle.setAttribute("cx", n.x);
+      circle.setAttribute("cy", n.y);
+      circle.setAttribute("r", n.size);
+      circle.setAttribute("fill", n.color);
+      circle.classList.add("node");
+      circle.addEventListener("mousemove", event => showTip(event, `<b>${escapeHtml(n.id)}</b><br>Drugs: ${n.drug_count}<br>Severity: ${n.severity}`));
+      circle.addEventListener("mouseleave", hideTip);
+      circle.addEventListener("mouseenter", () => highlight(n.id));
+      circle.addEventListener("mouseleave", () => clearHighlight());
+      circle.dataset.id = n.id;
+      svg.appendChild(circle);
+
+      const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      label.setAttribute("x", n.x);
+      label.setAttribute("y", n.y + n.size + 13);
+      label.classList.add("label");
+      label.dataset.id = n.id;
+      label.textContent = n.id.length > 22 ? n.id.slice(0, 20) + "..." : n.id;
+      svg.appendChild(label);
+    }
+    }
+
+    limitSelect.addEventListener("change", () => render(Number(limitSelect.value)));
+    render(Number(limitSelect.value));
+
+    function highlight(id) {
+      const linked = new Set([id]);
+      for (const edge of svg.querySelectorAll(".edge")) {
+        const active = edge.dataset.source === id || edge.dataset.target === id;
+        edge.classList.toggle("active", active);
+        edge.classList.toggle("dim", !active);
+        if (active) {
+          linked.add(edge.dataset.source);
+          linked.add(edge.dataset.target);
+        }
+      }
+      for (const node of svg.querySelectorAll(".node, .label")) {
+        node.classList.toggle("dim", !linked.has(node.dataset.id));
+      }
+    }
+
+    function clearHighlight() {
+      for (const item of svg.querySelectorAll(".dim, .active")) {
+        item.classList.remove("dim", "active");
+      }
+    }
+
+    function showTip(event, content) {
+      tip.innerHTML = content;
+      tip.style.display = "block";
+      tip.style.left = `${event.clientX + 14}px`;
+      tip.style.top = `${event.clientY + 14}px`;
+    }
+
+    function hideTip() {
+      tip.style.display = "none";
+    }
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
+    }
+  </script>
+</body>
+</html>
