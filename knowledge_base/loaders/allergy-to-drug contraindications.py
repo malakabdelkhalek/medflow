@@ -2,6 +2,8 @@ import csv
 import time
 import requests
 
+
+#allergy-to-drug contraindications
 BASE = "https://rxnav.nlm.nih.gov/REST/rxclass"
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (compatible; DrugPipeline/1.0)",

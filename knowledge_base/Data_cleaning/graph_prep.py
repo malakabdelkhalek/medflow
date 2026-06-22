@@ -3,23 +3,21 @@ import re
 from collections import defaultdict
 import os
 
-# ============================================================
+
 # CONFIG
-# ============================================================
 BASE      = r"C:\Users\arijk\Desktop\medflow"
 INPUT_CSV = rf"{BASE}\knowledge_base\sources\dataset\interactions_grouped_by_class.csv"
 OUTPUT_DIR = rf"{BASE}\knowledge_base\graph"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-# ============================================================
+
 # STEP 1 — LOAD
-# ============================================================
 df = pd.read_csv(INPUT_CSV)
 print(f" Loaded: {len(df)} rows")
 
-# ============================================================
+
 # STEP 2 — CLEAN CLASSES
-# ============================================================
+
 def clean_class(name):
     if pd.isna(name):
         return None
@@ -35,9 +33,9 @@ df_clean = df[df["Classe_Clean"].notna()].copy()
 print(f" Valid classes after cleaning: {len(df_clean)}")
 print(f"  Dropped: {len(df) - len(df_clean)} rows (Inconnue/unknown)")
 
-# ============================================================
+
 # STEP 3 — PARSE DRUG LISTS
-# ============================================================
+
 def parse_drugs(cell):
     if pd.isna(cell):
         return []
@@ -45,9 +43,8 @@ def parse_drugs(cell):
 
 df_clean["drug_list"] = df_clean["Medicaments"].apply(parse_drugs)
 
-# ============================================================
+
 # STEP 4 — SEVERITY
-# ============================================================
 SEVERITY_PATTERNS = {
     "CONTRAINDICATED": r"contraindicated|do not use|must not",
     "MAJOR":           r"major|serious|severe|life.threatening",
@@ -66,9 +63,8 @@ def extract_severity(text):
 
 df_clean["severity"] = df_clean["Interactions"].apply(extract_severity)
 
-# ============================================================
 # STEP 5 — BUILD CLASS→CLASS EDGES
-# ============================================================
+
 drug_to_class = {}
 for _, row in df_clean.iterrows():
     for drug in row["drug_list"]:
@@ -101,9 +97,9 @@ for (class_a, class_b), data in class_pairs.items():
 
 edges_df = pd.DataFrame(edges).sort_values("weight", ascending=False)
 
-# ============================================================
+
 # STEP 6 — SAVE nodes.csv + edges.csv
-# ============================================================
+
 nodes_df = df_clean[["Classe_Clean", "Nombre_Medicaments", "severity"]].rename(
     columns={"Classe_Clean": "id", "Nombre_Medicaments": "drug_count"}
 ).drop_duplicates("id")
@@ -114,9 +110,9 @@ edges_path = rf"{OUTPUT_DIR}\edges.csv"
 nodes_df.to_csv(nodes_path, index=False)
 edges_df.to_csv(edges_path, index=False)
 
-# ============================================================
+
 # SUMMARY
-# ============================================================
+
 print(f"\n Saved:")
 print(f"   → {nodes_path} ({len(nodes_df)} nodes)")
 print(f"   → {edges_path} ({len(edges_df)} edges)")

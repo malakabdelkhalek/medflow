@@ -3,9 +3,8 @@ import requests
 import time
 from tqdm import tqdm
 
-# ============================================================
 # 1. LOAD YOUR FILES
-# ============================================================
+
 BASE = r"C:\Users\arijk\Desktop\medflow"  
 
 interactions = pd.read_csv(rf"{BASE}\knowledge_base\sources\dataset\interactions_fda_clean.csv")
@@ -15,9 +14,8 @@ rxnorm_ref   = pd.read_csv(rf"{BASE}\knowledge_base\sources\dataset\rxnorm_mappi
 interactions["Nom_Generique_clean"] = interactions["Nom_Generique"].str.lower().str.strip()
 rxnorm_ref["inn_name_clean"]        = rxnorm_ref["inn_name"].str.lower().str.strip()
 
-# ============================================================
 # 2. JOIN — fill what we can from the reference file
-# ============================================================
+
 merged = interactions.merge(
     rxnorm_ref[["inn_name_clean", "rxnorm_cui"]],
     left_on="Nom_Generique_clean",
@@ -25,11 +23,11 @@ merged = interactions.merge(
     how="left"
 )
 
-print(f"✅ Matched from reference file: {merged['rxnorm_cui'].notna().sum()} / {len(merged)}")
+print(f" Matched from reference file: {merged['rxnorm_cui'].notna().sum()} / {len(merged)}")
 
-# ============================================================
+
 # 3. FOR UNMATCHED ROWS — fetch CUI from RxNorm API
-# ============================================================
+
 def get_rxnorm_cui(drug_name):
     """Search RxNorm API for a drug CUI by name."""
     try:
@@ -54,12 +52,11 @@ def get_pharma_class(cui):
     except:
         return "Inconnue"
 
-# ============================================================
 # 4. ONLY CALL API FOR UNIQUE UNMATCHED DRUG NAMES
 #    (avoids 31,250 API calls — deduplicate first!)
-# ============================================================
+
 unmatched_drugs = merged[merged["rxnorm_cui"].isna()]["Nom_Generique_clean"].unique()
-print(f"🔍 Unique drugs to look up via API: {len(unmatched_drugs)}")
+print(f" Unique drugs to look up via API: {len(unmatched_drugs)}")
 
 drug_class_map = {}
 
@@ -72,9 +69,8 @@ for drug in tqdm(unmatched_drugs, desc="Fetching from RxNorm API"):
         drug_class_map[drug] = {"rxnorm_cui": None, "Classe_API": "Inconnue"}
     time.sleep(0.2)  # ← be polite to the API (rate limit)
 
-# ============================================================
 # 5. MERGE API RESULTS BACK
-# ============================================================
+
 api_df = pd.DataFrame.from_dict(drug_class_map, orient="index").reset_index()
 api_df.columns = ["Nom_Generique_clean", "rxnorm_cui_api", "Classe_API"]
 
@@ -83,15 +79,13 @@ merged = merged.merge(api_df, on="Nom_Generique_clean", how="left")
 # Fill CUI: prefer reference file, fallback to API
 merged["rxnorm_cui_final"] = merged["rxnorm_cui"].combine_first(merged["rxnorm_cui_api"])
 
-# ============================================================
 # 6. FETCH CLASS FOR REFERENCE-MATCHED ROWS (that had no class)
-# ============================================================
 needs_class = (
     merged["Classe_Pharmacologique"].isna() |
     (merged["Classe_Pharmacologique"].str.lower().str.strip() == "inconnue")
 ) & merged["Classe_API"].isna()
 
-print(f"⚙️  Fetching class for reference-matched rows: {needs_class.sum()}")
+print(f"  Fetching class for reference-matched rows: {needs_class.sum()}")
 
 for idx, row in tqdm(merged[needs_class].iterrows(), total=needs_class.sum()):
     if pd.notna(row["rxnorm_cui_final"]):
@@ -99,10 +93,9 @@ for idx, row in tqdm(merged[needs_class].iterrows(), total=needs_class.sum()):
         merged.at[idx, "Classe_API"] = cls
     time.sleep(0.2)
 
-# ============================================================
+
 # 7. FINAL CLASS COLUMN
 #    Priority: original (if not Inconnue) → API result
-# ============================================================
 def pick_class(row):
     original = str(row.get("Classe_Pharmacologique", "")).strip().lower()
     if original and original != "inconnue" and original != "nan":
@@ -111,9 +104,8 @@ def pick_class(row):
 
 merged["Classe_Finale"] = merged.apply(pick_class, axis=1)
 
-# ============================================================
+
 # 8. GROUP BY FINAL CLASS
-# ============================================================
 grouped = merged.groupby("Classe_Finale").agg(
     Nombre_Medicaments=("Nom_Marque", "count"),
     Medicaments=("Nom_Marque", lambda x: ", ".join(x.dropna().unique())),
@@ -121,9 +113,8 @@ grouped = merged.groupby("Classe_Finale").agg(
     Interactions=("Texte_Interaction", lambda x: " | ".join(x.dropna()))
 ).reset_index().sort_values("Nombre_Medicaments", ascending=False)
 
-# ============================================================
+
 # 9. SAVE RESULTS
-# ============================================================
 merged.to_csv(rf"{BASE}\\knowledge_base\\sources\\dataset\\interactions_enriched.csv", index=False)
 grouped.to_csv(rf"{BASE}\\knowledge_base\\sources\\dataset\\interactions_grouped_by_class.csv", index=False)
 
