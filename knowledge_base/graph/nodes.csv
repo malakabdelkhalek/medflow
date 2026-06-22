@@ -1,38 +1,38 @@
 id,drug_count,severity
-Nonsteroidal Anti-Inflammatory Drug,839,CONTRAINDICATED
+Nonsteroidal Anti-Inflammatory Drug,840,CONTRAINDICATED
 Corticosteroid,789,MAJOR
-Benzodiazepine,474,CONTRAINDICATED
+Benzodiazepine,475,CONTRAINDICATED
 Thiazide Diuretic,460,MAJOR
-Atypical Antipsychotic,355,CONTRAINDICATED
+Atypical Antipsychotic,356,CONTRAINDICATED
 Azole Antifungal,308,CONTRAINDICATED
-Anti-Epileptic Agent,290,MAJOR
-Muscle Relaxant,258,MODERATE
+Anti-Epileptic Agent,292,MAJOR
+Muscle Relaxant,260,MODERATE
 Sulfonylurea,247,CONTRAINDICATED
-Angiotensin 2 Receptor Blocker,236,CONTRAINDICATED
+Angiotensin 2 Receptor Blocker,235,CONTRAINDICATED
 Proton Pump Inhibitor,218,CONTRAINDICATED
 Loop Diuretic,216,MAJOR
 Hmg-Coa Reductase Inhibitor,192,CONTRAINDICATED
 Histamine-2 Receptor Antagonist,185,MAJOR
-Nitroimidazole Antimicrobial,181,CONTRAINDICATED
-Herpes Simplex Virus Nucleoside Analog Dna Polymerase Inhibitor,181,MINOR
+Nitroimidazole Antimicrobial,182,CONTRAINDICATED
+Herpes Simplex Virus Nucleoside Analog Dna Polymerase Inhibitor,179,MINOR
 Peroxisome Proliferator Receptor Alpha Agonist,179,CONTRAINDICATED
 Xanthine Oxidase Inhibitor,163,CONTRAINDICATED
-Beta-Adrenergic Blocker,161,CONTRAINDICATED
-Estrogen,150,CONTRAINDICATED
-Phosphodiesterase 5 Inhibitor,140,CONTRAINDICATED
+Beta-Adrenergic Blocker,154,CONTRAINDICATED
+Estrogen,152,CONTRAINDICATED
+Phosphodiesterase 5 Inhibitor,141,CONTRAINDICATED
 Aldosterone Antagonist,137,CONTRAINDICATED
 Retinoid,135,CONTRAINDICATED
-Alpha-Adrenergic Blocker,124,CONTRAINDICATED
-Dihydropyridine Calcium Channel Blocker,118,MAJOR
-Amide Local Anesthetic,116,MODERATE
+Alpha-Adrenergic Blocker,122,CONTRAINDICATED
+Dihydropyridine Calcium Channel Blocker,121,MAJOR
+Amide Local Anesthetic,117,MAJOR
 Nitrate Vasodilator,109,CONTRAINDICATED
+Thiazide-Like Diuretic,103,MAJOR
 Nucleoside Metabolic Inhibitor,102,MAJOR
 5-Alpha Reductase Inhibitor,99,MODERATE
-Thiazide-Like Diuretic,97,MAJOR
-Alpha-Adrenergic Agonist,91,MAJOR
-Kinase Inhibitor,89,CONTRAINDICATED
+Alpha-Adrenergic Agonist,92,MAJOR
+Kinase Inhibitor,90,CONTRAINDICATED
 Fluoroquinolone Antibacterial,86,CONTRAINDICATED
-Mood Stabilizer,85,CONTRAINDICATED
+Mood Stabilizer,86,CONTRAINDICATED
 Serotonin-3 Receptor Antagonist,84,CONTRAINDICATED
 Barbiturate,80,CONTRAINDICATED
 Nitrofuran Antibacterial,73,UNKNOWN
@@ -41,11 +41,10 @@ Androgen,69,MODERATE
 Aromatase Inhibitor,69,CONTRAINDICATED
 Aminosalicylate,68,MODERATE
 Cephalosporin Antibacterial,65,UNKNOWN
+Angiotensin Converting Enzyme Inhibitor,65,CONTRAINDICATED
 Factor Xa Inhibitor,64,MAJOR
-Angiotensin Converting Enzyme Inhibitor,64,CONTRAINDICATED
 Quinolone Antimicrobial,63,MODERATE
 Insulin Analog,60,MODERATE
-Aromatic Amino Acid Decarboxylation Inhibitor,59,CONTRAINDICATED
 Alkaloid,59,CONTRAINDICATED
 Radioactive Diagnostic Agent,58,MODERATE
 Aluminum Complex,55,UNKNOWN
@@ -54,302 +53,301 @@ Lipopeptide Antibacterial,50,UNKNOWN
 Human Immunodeficiency Virus Nucleoside Analog Reverse Transcriptase Inhibitor,49,CONTRAINDICATED
 Human Immunodeficiency Virus 1 Non-Nucleoside Analog Reverse Transcriptase Inhibitor,46,CONTRAINDICATED
 Antifibrinolytic Agent,45,CONTRAINDICATED
+Thyroid Hormone Synthesis Inhibitor,44,UNKNOWN
 Hepatitis B Virus Nucleoside Analog Reverse Transcriptase Inhibitor,44,CONTRAINDICATED
 Platinum-Based Drug,44,MODERATE
-Thyroid Hormone Synthesis Inhibitor,44,UNKNOWN
-Cardiac Glycoside,43,MAJOR
-Dietary Cholesterol Absorption Inhibitor,43,CONTRAINDICATED
 Macrolide Antimicrobial,43,CONTRAINDICATED
+Dietary Cholesterol Absorption Inhibitor,43,CONTRAINDICATED
+Cardiac Glycoside,43,MAJOR
 Glp-1 Receptor Agonist,42,MAJOR
 Alkylating Drug,41,MAJOR
 General Anesthetic,41,MAJOR
+Sodium-Glucose Cotransporter 2 Inhibitor,40,MAJOR
 Serotonin-1B And Serotonin-1D Receptor Agonist,40,CONTRAINDICATED
 Microtubule Inhibitor,39,MAJOR
-Sodium-Glucose Cotransporter 2 Inhibitor,39,MAJOR
 Anti-Anginal,38,CONTRAINDICATED
 Vitamin C,38,MODERATE
 Oxazolidinone Antibacterial,38,MAJOR
 Bile Acid,37,UNKNOWN
 Iron Chelator,37,MODERATE
-Pyridone,36,MODERATE
-Prostaglandin E1 Analog,36,MAJOR
-P2Y12 Platelet Inhibitor,36,MODERATE
-Osmotic Laxative,36,MODERATE
+Aromatic Amino Acid,37,CONTRAINDICATED
 Tetracycline-Class Drug,36,UNKNOWN
+Osmotic Laxative,36,MODERATE
+P2Y12 Platelet Inhibitor,36,MODERATE
+Prostaglandin E1 Analog,36,MAJOR
+Pyridone,36,MODERATE
+Phenothiazine,35,MAJOR
 Provitamin D2 Compound,35,MODERATE
-Phenothiazine,34,MAJOR
 Sympathomimetic-Like Agent,33,MODERATE
 Sulfone,32,MODERATE
-Antimalarial,31,CONTRAINDICATED
-Endothelin Receptor Antagonist,31,CONTRAINDICATED
+Antimalarial,32,CONTRAINDICATED
+Aromatic Amino Acid Decarboxylation Inhibitor,32,CONTRAINDICATED
+Endothelin Receptor Antagonist,30,MODERATE
 Anti-Coagulant,30,MAJOR
 Anticholinergic,29,MODERATE
-Proteasome Inhibitor,29,UNKNOWN
 Bile Acid Sequestrant,29,UNKNOWN
+Proteasome Inhibitor,29,UNKNOWN
 Adenosine Receptor Agonist,29,MAJOR
 Mtor Inhibitor Immunosuppressant,28,CONTRAINDICATED
 Vitamin D3 Analog,28,MODERATE
-Vitamin K,27,UNKNOWN
-Thalidomide Analog,27,MODERATE
 Estrogen Receptor Antagonist,27,MAJOR
 Carbonic Anhydrase Inhibitor,27,CONTRAINDICATED
+Vitamin K,27,UNKNOWN
+Thalidomide Analog,27,MODERATE
 Antirheumatic Agent,25,MODERATE
 Antimycobacterial,25,MAJOR
 Chloride Channel Activator,24,UNKNOWN
 Vitamin D2 Analog,24,MODERATE
-Arteriolar Vasodilator,24,UNKNOWN
 Macrolide,24,CONTRAINDICATED
+Arteriolar Vasodilator,24,UNKNOWN
 Aminoglycoside Antibacterial,24,UNKNOWN
 Purine Antimetabolite,23,MAJOR
-Antimetabolite,22,MAJOR
 Gamma-Aminobutyric Acid-Ergic Agonist,22,MODERATE
-Cytochrome P450 3A Inhibitor,21,CONTRAINDICATED
+Antimetabolite,22,MAJOR
 Tumor Necrosis Factor Blocker,21,MAJOR
 Catechol-O-Methyltransferase Inhibitor,20,CONTRAINDICATED
+Progestin,19,MODERATE
+Dipeptidyl Peptidase 4 Inhibitor,19,MODERATE
+Methylxanthine,19,MODERATE
 L-Thyroxine,19,MODERATE
 Glinide,19,UNKNOWN
-Progestin,19,MODERATE
 Phosphodiesterase 4 Inhibitor,19,MAJOR
-Methylxanthine,19,MODERATE
-Dipeptidyl Peptidase 4 Inhibitor,19,MODERATE
 Central Alpha-2 Adrenergic Agonist,18,MODERATE
 Cholinesterase Inhibitor,17,MODERATE
-Calcineurin Inhibitor Immunosuppressant,17,CONTRAINDICATED
-Folate Analog Metabolic Inhibitor,17,MAJOR
 Radiographic Contrast Agent,17,MODERATE
+Folate Analog Metabolic Inhibitor,17,MAJOR
+Cytochrome P450 3A Inhibitor,17,CONTRAINDICATED
+Calcineurin Inhibitor Immunosuppressant,17,CONTRAINDICATED
 Potassium Binder,16,MODERATE
 Histamine-1 Receptor Antagonist,16,CONTRAINDICATED
+Beta3-Adrenergic Agonist,15,MODERATE
+Androgen Receptor Inhibitor,15,MODERATE
+Platelet Aggregation Inhibitor,15,UNKNOWN
+Pyrimidine Synthesis Inhibitor,15,UNKNOWN
 Gamma-Aminobutyric Acid A Receptor Agonist,15,MODERATE
 Antiparasitic,15,UNKNOWN
-Androgen Receptor Inhibitor,15,MODERATE
-Pyrimidine Synthesis Inhibitor,15,UNKNOWN
-Beta3-Adrenergic Agonist,15,MODERATE
-Platelet Aggregation Inhibitor,15,UNKNOWN
-Antidote,14,MODERATE
-Anthelmintic,14,CONTRAINDICATED
 Central Nervous System Stimulant,14,CONTRAINDICATED
-Vascular Endothelial Growth Factor Inhibitor,13,MAJOR
-Calcitonin,13,UNKNOWN
-Potassium-Sparing Diuretic,13,MAJOR
-Parenteral Iron Replacement,13,UNKNOWN
+Anthelmintic,14,CONTRAINDICATED
+Antidote,14,MODERATE
 Vesicular Monoamine Transporter 2 Inhibitor,13,CONTRAINDICATED
+Potassium-Sparing Diuretic,13,MAJOR
+Calcitonin,13,UNKNOWN
+Parenteral Iron Replacement,13,UNKNOWN
 Insulin,13,MODERATE
-Nicotinic Acid,13,MODERATE
 Leukotriene Receptor Antagonist,13,MODERATE
-Prostaglandin Analog,12,CONTRAINDICATED
-Potassium Channel Blocker,12,MODERATE
+Nicotinic Acid,13,MODERATE
+Vascular Endothelial Growth Factor Inhibitor,13,MAJOR
 Dihydrofolate Reductase Inhibitor Antibacterial,12,CONTRAINDICATED
 Interleukin-12 Antagonist,12,MODERATE
+Prostaglandin Analog,12,CONTRAINDICATED
+Protease Inhibitor,12,CONTRAINDICATED
+Progesterone,12,MODERATE
+Potassium Channel Blocker,12,MODERATE
 Acetylcholine Release Inhibitor,11,MODERATE
-Phosphodiesterase 3 Inhibitor,11,MODERATE
-Carnitine Analog,11,UNKNOWN
-Prostacycline Vasodilator,11,MODERATE
-Partial Opioid Agonist,11,MAJOR
 Antiarrhythmic,11,CONTRAINDICATED
 Substance P/Neurokinin-1 Receptor Antagonist,11,CONTRAINDICATED
-Progesterone,11,MODERATE
-Cannabinoid,10,MODERATE
+Prostacycline Vasodilator,11,MODERATE
+Phosphodiesterase 3 Inhibitor,11,MODERATE
+Carnitine Analog,11,UNKNOWN
 Vasopressin V2 Receptor Antagonist,10,CONTRAINDICATED
+4-Hydroxyphenyl-Pyruvate Dioxygenase Inhibitor,10,MAJOR
 Benzodiazepine Antagonist,10,MODERATE
 Rifamycin Antibacterial,10,CONTRAINDICATED
-4-Hydroxyphenyl-Pyruvate Dioxygenase Inhibitor,10,MAJOR
-Aromatic Amino Acid,10,CONTRAINDICATED
-Tetracycline-Class Antibacterial,9,UNKNOWN
-Ccr5 Co-Receptor Antagonist,9,UNKNOWN
-Benzothiazole,9,MODERATE
-Rifamycin Antimycobacterial,9,CONTRAINDICATED
-Opioid Agonist,9,MAJOR
+Cannabinoid,10,MODERATE
+Partial Opioid Agonist,10,MAJOR
 Interleukin-6 Receptor Antagonist,9,MODERATE
 Vasodilator,9,UNKNOWN
+Benzothiazole,9,MODERATE
+Opioid Agonist,9,MAJOR
+Ccr5 Co-Receptor Antagonist,9,UNKNOWN
+Rifamycin Antimycobacterial,9,CONTRAINDICATED
+Tetracycline-Class Antibacterial,9,UNKNOWN
 5-Lipoxygenase Inhibitor,9,UNKNOWN
+Cd20-Directed Cytolytic Antibody,8,MODERATE
 Her2/Neu Receptor Antagonist,8,UNKNOWN
 Adrenocorticotropic Hormone,8,MODERATE
-Lipid Emulsion,8,UNKNOWN
-Cd20-Directed Cytolytic Antibody,8,MODERATE
-Protease Inhibitor,8,CONTRAINDICATED
 Ergot Derivative,8,UNKNOWN
+Lipid Emulsion,8,UNKNOWN
 Lipid-Based Polyene Antifungal,7,MODERATE
-Reducing And Complexing Thiol,7,UNKNOWN
-Blood Viscosity Reducer,7,UNKNOWN
-Parathyroid Hormone Analog,7,MODERATE
 Alpha-Glucosidase Inhibitor,7,UNKNOWN
-Nucleoside Analog Antiviral,7,CONTRAINDICATED
 Melanin Synthesis Inhibitor,7,MODERATE
-Nucleoside Analog Antifungal,7,UNKNOWN
-Noncompetitive Ampa Glutamate Receptor Antagonist,7,MODERATE
 Echinocandin Antifungal,7,UNKNOWN
 Glucosylceramide Synthase Inhibitor,7,CONTRAINDICATED
-Dihydrofolate Reductase Inhibitor Antimalarial,7,UNKNOWN
+Parathyroid Hormone Analog,7,MODERATE
 Endoglycosidase,7,MODERATE
+Nucleoside Analog Antifungal,7,UNKNOWN
+Noncompetitive Ampa Glutamate Receptor Antagonist,7,MODERATE
+Nucleoside Analog Antiviral,7,CONTRAINDICATED
+Blood Viscosity Reducer,7,UNKNOWN
+Reducing And Complexing Thiol,7,UNKNOWN
+Dihydrofolate Reductase Inhibitor Antimalarial,7,UNKNOWN
+Herpesvirus Nucleoside Analog Dna Polymerase Inhibitor,6,MINOR
+Amino Acid,6,MODERATE
+Osmotic Diuretic,6,MODERATE
+Vitamin B12,6,UNKNOWN
 Skin Test Antigen,6,MODERATE
 Pharmacologic Cardiac Stress Test Agent,6,MAJOR
-Osmotic Diuretic,6,MODERATE
-Beta Lactamase Inhibitor,6,MODERATE
-Herpesvirus Nucleoside Analog Dna Polymerase Inhibitor,6,MINOR
-Topoisomerase Inhibitor,6,MAJOR
 Typical Antipsychotic,6,CONTRAINDICATED
-Amino Acid,6,MODERATE
-Histone Deacetylase Inhibitor,5,MAJOR
-Rna Synthetase Inhibitor Antibacterial,5,UNKNOWN
-Progestin Antagonist,5,CONTRAINDICATED
+Beta Lactamase Inhibitor,6,MODERATE
+Topoisomerase Inhibitor,6,MAJOR
 Complement Inhibitor,5,UNKNOWN
-Oxytocic,5,MAJOR
-Human Immunoglobulin G,5,MODERATE
-Janus Kinase Inhibitor,5,CONTRAINDICATED
-Vitamin B12,5,UNKNOWN
+Rna Synthetase Inhibitor Antibacterial,5,UNKNOWN
+Histone Deacetylase Inhibitor,5,MAJOR
 Aldehyde Dehydrogenase Inhibitor,5,MODERATE
+Human Immunoglobulin G,5,MODERATE
 Tubulin Inhibiting Agent,5,MAJOR
-Macrolide Antibacterial,4,UNKNOWN
-Vitamin D,4,MAJOR
-Cystic Fibrosis Transmembrane Conductance Regulator Potentiator,4,MAJOR
-Sphingosine 1-Phosphate Receptor Modulator,4,MAJOR
+Progestin Antagonist,5,CONTRAINDICATED
+Oxytocic,5,MAJOR
+Expectorant,4,CONTRAINDICATED
+Hepatitis C Virus Nucleotide Analog Ns5B Polymerase Inhibitor,4,CONTRAINDICATED
+Hepatitis C Virus Ns5A Inhibitor,4,CONTRAINDICATED
 Plasma Kallikrein Inhibitor,4,MODERATE
 Cholecystokinin Analog,4,UNKNOWN
-Expectorant,4,CONTRAINDICATED
-Hepatitis C Virus Ns5A Inhibitor,4,CONTRAINDICATED
-Antiprotozoal,4,UNKNOWN
 Antihypoglycemic Agent,4,UNKNOWN
-Cytomegalovirus Nucleoside Analog Dna Polymerase Inhibitor,3,MODERATE
-Prostacyclin Receptor Agonist,3,CONTRAINDICATED
-Somatostatin Analog,3,MODERATE
-Recombinant Human Growth Hormone,3,MODERATE
-Standardized Chemical Allergen,3,UNKNOWN
-Cd38-Directed Cytolytic Antibody,3,MODERATE
-Respiratory Syncytial Virus Anti-F Protein Monoclonal Antibody,3,MODERATE
-Orexin Receptor Antagonist,3,MAJOR
+Janus Kinase Inhibitor,4,CONTRAINDICATED
+Macrolide Antibacterial,4,UNKNOWN
+Cystic Fibrosis Transmembrane Conductance Regulator Potentiator,4,MAJOR
+Sphingosine 1-Phosphate Receptor Modulator,4,MAJOR
 Lincosamide Antibacterial,3,MAJOR
-Glycopeptide Antibacterial,3,MODERATE
 Ileal Bile Acid Transporter Inhibitor,3,UNKNOWN
-Integrin Receptor Antagonist,3,MODERATE
-Hepatitis C Virus Nucleotide Analog Ns5B Polymerase Inhibitor,3,CONTRAINDICATED
-Dopamine-2 Receptor Antagonist,3,MODERATE
-Penem Antibacterial,3,MODERATE
+Standardized Chemical Allergen,3,UNKNOWN
+Prostacyclin Receptor Agonist,3,CONTRAINDICATED
+Vitamin D,3,MAJOR
+Somatostatin Analog,3,MODERATE
+Cytomegalovirus Nucleoside Analog Dna Polymerase Inhibitor,3,MODERATE
+Cd38-Directed Cytolytic Antibody,3,MODERATE
 Opioid Antagonist,3,MAJOR
+Glycopeptide Antibacterial,3,MODERATE
+Penem Antibacterial,3,MODERATE
+Orexin Receptor Antagonist,3,MAJOR
+Respiratory Syncytial Virus Anti-F Protein Monoclonal Antibody,3,MODERATE
+Antiprotozoal,3,UNKNOWN
+Integrin Receptor Antagonist,3,MODERATE
+Recombinant Human Growth Hormone,3,MODERATE
+Dopamine-2 Receptor Antagonist,3,MODERATE
+Gonadotropin Releasing Hormone Receptor Antagonist,2,UNKNOWN
+Photoenhancer,2,UNKNOWN
+Interleukin-5 Antagonist,2,UNKNOWN
+Intestinal Lipase Inhibitor,2,MODERATE
+Neuraminidase Inhibitor,2,UNKNOWN
+Vasoconstrictor,2,UNKNOWN
+Hypoxia-Inducible Factor Prolyl Hydroxylase Inhibitor,2,CONTRAINDICATED
+Monoamine Oxidase Inhibitor,2,CONTRAINDICATED
+Copper-Containing Intrauterine Device,2,UNKNOWN
+Neonatal Fc Receptor Blocker,2,UNKNOWN
+Adrenal Steroid Synthesis Inhibitor,2,UNKNOWN
+Adenosine Triphosphate-Citrate Lyase Inhibitor,2,MAJOR
+Interleukin-23 Antagonist,2,MAJOR
+Influenza A M2 Protein Inhibitor,2,MAJOR
+Glucose-Dependent Insulinotropic Polypeptide Receptor Agonist,2,MODERATE
+Partial Opioid Agonist/Antagonist,2,MAJOR
 Bispecific Cd20-Directed Cd3 T Cell Engager,2,MAJOR
 Anthrax Protective Antigen-Directed Antibody,2,UNKNOWN
-Calcitonin Gene-Related Peptide Receptor Antagonist,2,MODERATE
-Photoenhancer,2,UNKNOWN
-Gonadotropin Releasing Hormone Receptor Antagonist,2,UNKNOWN
-Gonadotropin,2,UNKNOWN
-Glucose-Dependent Insulinotropic Polypeptide Receptor Agonist,2,MODERATE
-Growth Hormone Secretagogue Receptor Agonist,2,MODERATE
-Interleukin-23 Antagonist,2,MAJOR
-Vasoconstrictor,2,UNKNOWN
 Antimetabolite Immunosuppressant,2,MODERATE
-Hypoxia-Inducible Factor Prolyl Hydroxylase Inhibitor,2,CONTRAINDICATED
-Intestinal Lipase Inhibitor,2,MODERATE
-Influenza A M2 Protein Inhibitor,2,MAJOR
-Isocitrate Dehydrogenase 1 Inhibitor,2,MODERATE
-Interleukin-5 Antagonist,2,UNKNOWN
-Adenosine Triphosphate-Citrate Lyase Inhibitor,2,MAJOR
-Adrenal Steroid Synthesis Inhibitor,2,UNKNOWN
-Catecholamine Synthesis Inhibitor,2,MODERATE
-Neuroactive Steroid Gamma-Aminobutyric Acid A Receptor Positive Modulator,2,MODERATE
-Nonergot Dopamine Agonist,2,MAJOR
-Plasma Volume Expander,2,MODERATE
-Soluble Guanylate Cyclase Stimulator,2,CONTRAINDICATED
+Gonadotropin,2,UNKNOWN
 Serotonin And Norepinephrine Reuptake Inhibitor,2,CONTRAINDICATED
-Beta2-Adrenergic Agonist,2,MAJOR
-Copper-Containing Intrauterine Device,2,UNKNOWN
+Soluble Guanylate Cyclase Stimulator,2,CONTRAINDICATED
+Catecholamine Synthesis Inhibitor,2,MODERATE
+Nonergot Dopamine Agonist,2,MAJOR
 Photoactivated Radical Generator,2,UNKNOWN
-Neuraminidase Inhibitor,2,UNKNOWN
-Monoamine Oxidase Inhibitor,2,CONTRAINDICATED
-Partial Opioid Agonist/Antagonist,2,MAJOR
-Neonatal Fc Receptor Blocker,2,UNKNOWN
-Leukocyte Growth Factor,1,MODERATE
-Type I Interferon Receptor Antagonist,1,UNKNOWN
-Tricyclic Antidepressant,1,MODERATE
+Plasma Volume Expander,2,MODERATE
+Calcitonin Gene-Related Peptide Receptor Antagonist,2,MODERATE
+Growth Hormone Secretagogue Receptor Agonist,2,MODERATE
+Neuroactive Steroid Gamma-Aminobutyric Acid A Receptor Positive Modulator,2,MODERATE
+Menin Inhibitor,1,MAJOR
+Antidiarrheal,1,UNKNOWN
 Zaire Ebolavirus Glycoprotein-Directed Antibody,1,UNKNOWN
-Tissue-Nonspecific Alkaline Phosphatase,1,UNKNOWN
+Medium-Chain Triglyceride,1,UNKNOWN
+Leukocyte Growth Factor,1,MODERATE
 Leptin Analog,1,UNKNOWN
 Lipoglycopeptide Antibacterial,1,MODERATE
+Live Attenuated Bacillus Calmette-Guerin Vaccine,1,UNKNOWN
 Lymphocyte Growth Factor,1,MAJOR
+Immunoglobulin G,1,UNKNOWN
+Human Platelet-Derived Growth Factor,1,UNKNOWN
+Complement Factor D Inhibitor,1,MAJOR
+Human Immunoglobulin,1,UNKNOWN
+Isocitrate Dehydrogenase 1 Inhibitor,1,MODERATE
+Hypoxia-Inducible Factor Inhibitor,1,MODERATE
+Lead Chelator,1,UNKNOWN
+Anti-Ige,1,UNKNOWN
+Urease Inhibitor,1,MODERATE
+Uric Acid-Specific Enzyme,1,UNKNOWN
+Tricyclic Antidepressant,1,MODERATE
+Type I Interferon Receptor Antagonist,1,UNKNOWN
+Alpha-1 Adrenergic Agonist,1,UNKNOWN
+Interferon Alfa-2B,1,MODERATE
 Interferon Alpha,1,MAJOR
-Interleukin-2 Receptor Blocking Antibody,1,MODERATE
+Interferon Gamma Blocker,1,UNKNOWN
 Interleukin-17A Antagonist,1,MINOR
 Interleukin-17 Receptor A Antagonist,1,UNKNOWN
 Interleukin-1 Receptor Antagonist,1,MAJOR
 Interferon Gamma,1,MODERATE
-Interferon Gamma Blocker,1,UNKNOWN
 Interleukin-6 Antagonist,1,MODERATE
-Lead Chelator,1,UNKNOWN
-Interferon Alfa-2B,1,MODERATE
-Immunoglobulin G,1,UNKNOWN
-Glp-2 Analog,1,MODERATE
-Hypoxia-Inducible Factor Inhibitor,1,MODERATE
-Antithrombin-Directed Rna Interaction,1,MODERATE
-Antileishmanial,1,MAJOR
-Human Immunoglobulin,1,UNKNOWN
-Asparagine-Specific Enzyme,1,UNKNOWN
-Human Platelet-Derived Growth Factor,1,UNKNOWN
-Hedgehog Pathway Inhibitor,1,MODERATE
-Hemoglobin S Polymerization Inhibitor,1,MODERATE
-Gamma Secretase Inhibitor,1,MAJOR
-Glycolipid Disialoganglioside-Directed Antibody,1,UNKNOWN
-Hepatitis C Virus Ns3/4A Protease Inhibitor,1,CONTRAINDICATED
-Uric Acid-Specific Enzyme,1,UNKNOWN
-Urease Inhibitor,1,MODERATE
-Estrogen Agonist/Antagonist,1,CONTRAINDICATED
-Dopamine And Norepinephrine Reuptake Inhibitor,1,MODERATE
-Live Attenuated Bacillus Calmette-Guerin Vaccine,1,UNKNOWN
-Cholinergic Muscarinic Agonist,1,UNKNOWN
-Cholinergic Muscarinic Antagonist,1,UNKNOWN
-Poly(Adp-Ribose) Polymerase Inhibitor,1,MODERATE
-Protease Activator,1,MODERATE
-Cytomegalovirus Pul97 Kinase Inhibitor,1,MAJOR
-Cortisol Synthesis Inhibitor,1,CONTRAINDICATED
-Complement Factor D Inhibitor,1,MAJOR
-Carboxypeptidase,1,MODERATE
-Cardiac Myosin Inhibitor,1,CONTRAINDICATED
-Decorporation Agent,1,UNKNOWN
-Corticotropin-Releasing Factor Type 1 Receptor Antagonist,1,MODERATE
-Phenylalanine Metabolizing Enzyme,1,MAJOR
-Phosphate Binder,1,UNKNOWN
-Nonsteroidal Mineralocorticoid-Receptor Antagonist,1,CONTRAINDICATED
-Neurokinin 3 Receptor Antagonist,1,CONTRAINDICATED
-Paramagnetic Contrast Agent,1,UNKNOWN
-Orthopoxvirus Vp37 Envelope Wrapping Protein Inhibitor,1,MODERATE
-Medium-Chain Triglyceride,1,UNKNOWN
-Farnesyltransferase Inhibitor,1,CONTRAINDICATED
-Menin Inhibitor,1,MAJOR
-Mucocutaneous Epithelial Cell Growth Factor,1,UNKNOWN
-Parathyroid Hormone-Related Peptide Analog,1,UNKNOWN
-Peroxisome Proliferator-Activated Receptor Agonist,1,MODERATE
+Interleukin-2 Receptor Blocking Antibody,1,MODERATE
 Complement 5A Receptor Antagonist,1,MODERATE
 Complement C5 Inhibitor,1,MODERATE
-Cytomegalovirus Dna Terminase Complex Inhibitor,1,CONTRAINDICATED
-Selective T Cell Costimulation Blocker,1,MODERATE
-Selective T Cell Costimulation Modulator,1,MAJOR
-Recombinant Human Deoxyribonuclease 1,1,UNKNOWN
-Cd30-Directed Immunoconjugate,1,UNKNOWN
-Cd22-Directed Immunoconjugate,1,MODERATE
-Cd19-Directed Cytolytic Antibody,1,UNKNOWN
-Cd19-Directed Chimeric Antigen Receptor,1,UNKNOWN
-Sodium Channel Blocker,1,CONTRAINDICATED
-Serotonin Reuptake Inhibitor,1,CONTRAINDICATED
+Mucocutaneous Epithelial Cell Growth Factor,1,UNKNOWN
+Farnesyltransferase Inhibitor,1,CONTRAINDICATED
+Glycolipid Disialoganglioside-Directed Antibody,1,UNKNOWN
+Gamma Secretase Inhibitor,1,MAJOR
+Bcl-2 Inhibitor,1,CONTRAINDICATED
+B Lymphocyte Stimulator-Specific Inhibitor,1,UNKNOWN
+Glp-2 Analog,1,MODERATE
+Estrogen Agonist/Antagonist,1,CONTRAINDICATED
+Autologous Cellular Immunotherapy,1,UNKNOWN
+Phenylalanine Metabolizing Enzyme,1,MAJOR
+Paramagnetic Contrast Agent,1,UNKNOWN
+Parathyroid Hormone-Related Peptide Analog,1,UNKNOWN
+Peroxisome Proliferator-Activated Receptor Agonist,1,MODERATE
+Poly(Adp-Ribose) Polymerase Inhibitor,1,MODERATE
 Bispecific B Cell Maturation Antigen-Directed Cd3 T Cell Engager,1,MAJOR
-Pyruvate Kinase Activator,1,MODERATE
-Renal Dehydropeptidase Inhibitor,1,MODERATE
+Orthopoxvirus Vp37 Envelope Wrapping Protein Inhibitor,1,MODERATE
+Cd30-Directed Immunoconjugate,1,UNKNOWN
+Nonsteroidal Mineralocorticoid-Receptor Antagonist,1,CONTRAINDICATED
+Cardiac Myosin Inhibitor,1,CONTRAINDICATED
+Neurokinin 3 Receptor Antagonist,1,CONTRAINDICATED
+Calculi Dissolution Agent,1,MODERATE
+Cd22-Directed Immunoconjugate,1,MODERATE
+Cd52-Directed Cytolytic Antibody,1,UNKNOWN
+Cxc Chemokine Receptor 4 Antagonist,1,CONTRAINDICATED
+Cholinergic Muscarinic Agonist,1,UNKNOWN
+Carboxypeptidase,1,MODERATE
+Hemoglobin S Polymerization Inhibitor,1,MODERATE
+Hedgehog Pathway Inhibitor,1,MODERATE
 Cholinergic Nicotinic Agonist,1,UNKNOWN
+Cholinergic Muscarinic Antagonist,1,UNKNOWN
+Phosphate Binder,1,UNKNOWN
+Renal Dehydropeptidase Inhibitor,1,MODERATE
+Serotonin Reuptake Inhibitor,1,CONTRAINDICATED
+Sodium Channel Blocker,1,CONTRAINDICATED
 Sars-Cov-2 Nucleotide Analog Rna Polymerase Inhibitor,1,MODERATE
 Slamf7-Directed Immunostimulatory Antibody,1,MODERATE
 Sclerosing Agent,1,UNKNOWN
 Selectin Blocker,1,UNKNOWN
-Standardized Insect Allergenic Extract,1,MAJOR
-Calculi Dissolution Agent,1,MODERATE
-Antidiarrheal,1,UNKNOWN
-Alpha-1 Adrenergic Agonist,1,UNKNOWN
+Selective T Cell Costimulation Blocker,1,MODERATE
+Selective T Cell Costimulation Modulator,1,MAJOR
+Pyruvate Kinase Activator,1,MODERATE
+Protease Activator,1,MODERATE
+Cd19-Directed Cytolytic Antibody,1,UNKNOWN
+Cd19-Directed Chimeric Antigen Receptor,1,UNKNOWN
+Recombinant Human Deoxyribonuclease 1,1,UNKNOWN
+Cortisol Synthesis Inhibitor,1,CONTRAINDICATED
 Sucrose-Specific Enzyme,1,UNKNOWN
-Anti-Ige,1,UNKNOWN
-Cxc Chemokine Receptor 4 Antagonist,1,CONTRAINDICATED
-Cd52-Directed Cytolytic Antibody,1,UNKNOWN
-Bcl-2 Inhibitor,1,CONTRAINDICATED
-Autologous Cellular Immunotherapy,1,UNKNOWN
-Survival Of Motor Neuron 2 Splicing Modifier,1,UNKNOWN
+Standardized Insect Allergenic Extract,1,MAJOR
+Dopamine And Norepinephrine Reuptake Inhibitor,1,MODERATE
+Decorporation Agent,1,UNKNOWN
+Cytomegalovirus Dna Terminase Complex Inhibitor,1,CONTRAINDICATED
+Cytomegalovirus Pul97 Kinase Inhibitor,1,MAJOR
 Sulfonamide Antibacterial,1,UNKNOWN
-B Lymphocyte Stimulator-Specific Inhibitor,1,UNKNOWN
-Thrombopoietin Receptor Agonist,1,UNKNOWN
-Thyroid Hormone Receptor Beta Agonist,1,MAJOR
+Antileishmanial,1,MAJOR
+Corticotropin-Releasing Factor Type 1 Receptor Antagonist,1,MODERATE
+Antithrombin-Directed Rna Interaction,1,MODERATE
 Thymic Stromal Lymphopoietin Blocker,1,UNKNOWN
+Thrombopoietin Receptor Agonist,1,UNKNOWN
+Survival Of Motor Neuron 2 Splicing Modifier,1,UNKNOWN
+Asparagine-Specific Enzyme,1,UNKNOWN
+Tissue-Nonspecific Alkaline Phosphatase,1,UNKNOWN
 Tissue Factor Pathway Inhibitor Antagonist,1,MAJOR
+Thyroid Hormone Receptor Beta Agonist,1,MAJOR
 Mu-Opioid Receptor Agonist,1,MAJOR

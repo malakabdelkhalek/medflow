@@ -29,7 +29,7 @@ cur = conn.cursor()
 
 csv_path = os.path.join(os.path.dirname(__file__), "../sources/clean/tunisian_brand_mapping_clean.csv")
 updated, skipped = 0, 0
-seen = set()  # keep first brand name per INN
+seen = set()  
 
 with open(csv_path, newline="", encoding="utf-8-sig") as f:
     for row in csv.DictReader(f):

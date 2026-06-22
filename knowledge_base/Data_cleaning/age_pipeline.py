@@ -1,9 +1,7 @@
 import pandas as pd
 import psycopg2
 
-# ============================================================
-# CONFIG
-# ============================================================
+
 BASE       = r"C:\Users\arijk\Desktop\medflow"
 GRAPH_DIR  = rf"{BASE}\knowledge_base\graph"
 NODES_CSV  = rf"{GRAPH_DIR}\nodes.csv"
@@ -19,40 +17,37 @@ DB_CONFIG = {
 
 GRAPH_NAME = "drug_interactions"
 
-# ============================================================
 # LOAD CSVs
-# ============================================================
+
 nodes_df = pd.read_csv(NODES_CSV)
 edges_df = pd.read_csv(EDGES_CSV)
-print(f"📥 nodes.csv: {len(nodes_df)} rows")
-print(f"📥 edges.csv: {len(edges_df)} rows")
+print(f" nodes.csv: {len(nodes_df)} rows")
+print(f" edges.csv: {len(edges_df)} rows")
 
-# ============================================================
+
 # CONNECT
-# ============================================================
-print("\n🔌 Connecting to PostgreSQL...")
+print("\n Connecting to PostgreSQL...")
 conn = psycopg2.connect(**DB_CONFIG)
 conn.autocommit = True
 cur = conn.cursor()
 
 cur.execute("LOAD '$libdir/plugins/age';")
 cur.execute("SET search_path = ag_catalog, \"$user\", public;")
-print("✅ Connected")
+print("Connected")
 
-# ============================================================
+
 # CREATE GRAPH (if not exists)
-# ============================================================
 cur.execute(f"SELECT count(*) FROM ag_graph WHERE name = '{GRAPH_NAME}';")
 if cur.fetchone()[0] == 0:
     cur.execute(f"SELECT create_graph('{GRAPH_NAME}');")
-    print(f"✅ Graph '{GRAPH_NAME}' created")
+    print(f" Graph '{GRAPH_NAME}' created")
 else:
-    print(f"ℹ️  Graph '{GRAPH_NAME}' already exists — appending data")
+    print(f"ℹ  Graph '{GRAPH_NAME}' already exists — appending data")
 
-# ============================================================
+
 # INSERT NODES
-# ============================================================
-print(f"\n📌 Inserting {len(nodes_df)} nodes...")
+
+print(f"\n Inserting {len(nodes_df)} nodes...")
 ok = 0
 for _, row in nodes_df.iterrows():
     name  = str(row["id"]).replace("'", "\\'")
@@ -69,14 +64,13 @@ for _, row in nodes_df.iterrows():
         """)
         ok += 1
     except Exception as e:
-        print(f"  ⚠️  Node skipped ({name}): {e}")
+        print(f"    Node skipped ({name}): {e}")
 
-print(f"✅ {ok}/{len(nodes_df)} nodes inserted")
+print(f" {ok}/{len(nodes_df)} nodes inserted")
 
-# ============================================================
 # INSERT EDGES
-# ============================================================
-print(f"\n🔗 Inserting {len(edges_df)} edges...")
+
+print(f"\n Inserting {len(edges_df)} edges...")
 ok = 0
 for _, row in edges_df.iterrows():
     src   = str(row["source"]).replace("'", "\\'")
@@ -98,14 +92,14 @@ for _, row in edges_df.iterrows():
         """)
         ok += 1
     except Exception as e:
-        print(f"  ⚠️  Edge skipped ({src} → {tgt}): {e}")
+        print(f"    Edge skipped ({src} → {tgt}): {e}")
 
-print(f"✅ {ok}/{len(edges_df)} edges inserted")
+print(f" {ok}/{len(edges_df)} edges inserted")
 
 # ============================================================
 # VERIFY
 # ============================================================
-print("\n📊 Graph summary:")
+print("\n Graph summary:")
 cur.execute(f"""
     SELECT * FROM cypher('{GRAPH_NAME}', $$
         MATCH (c:DrugClass) RETURN count(c)
@@ -122,4 +116,4 @@ print(f"   Edges : {cur.fetchone()[0]}")
 
 cur.close()
 conn.close()
-print("\n✅ Done — graph loaded into PostgreSQL/AGE")
+print("\n Done — graph loaded into PostgreSQL/AGE")

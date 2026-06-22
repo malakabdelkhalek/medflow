@@ -3,6 +3,7 @@ import csv
 import time
 import sys
 
+# This script retrieves all drug interactions from the FDA's open API 
 BASE_URL = "https://api.fda.gov/drug/label.json"
 INITIAL_QUERY = "search=_exists_:drug_interactions&limit=1000&sort=set_id:asc"
 
@@ -20,7 +21,7 @@ def download_all_interactions(output_filename="toutes_les_interactions_fda.csv")
     page_count = 1
     total_rows_saved = 0
     
-    print(f"🔄 Initialisation du téléchargement global vers '{output_filename}'...")
+    print(f" Initialisation du téléchargement global vers '{output_filename}'...")
     
     try:
         with open(output_filename, mode='w', encoding='utf-8', newline='') as f:
