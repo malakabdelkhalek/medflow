@@ -1,0 +1,617 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MedFlow Interaction Graph</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #f8fafc; color: #111827; font-family: Arial, sans-serif; }
+    header { padding: 16px 24px; border-bottom: 1px solid #d1d5db; background: white; }
+    h1 { margin: 0 0 6px; font-size: 22px; }
+    p { margin: 0; color: #475569; }
+    main { display: grid; grid-template-columns: minmax(620px, 1fr) 420px; min-height: calc(100vh - 78px); }
+    .canvas-panel { padding: 16px; }
+    .side-panel { border-left: 1px solid #d1d5db; background: white; padding: 16px; overflow: auto; max-height: calc(100vh - 78px); }
+    .toolbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 12px; }
+    .legend { display: flex; flex-wrap: wrap; gap: 8px; font-size: 12px; }
+    .legend span, .badge { display: inline-flex; align-items: center; border-radius: 4px; padding: 3px 7px; color: white; font-size: 11px; font-weight: 700; }
+    .contraindicated { background: #dc2626; }
+    .major { background: #ea580c; }
+    .moderate { background: #ca8a04; }
+    .minor { background: #16a34a; }
+    .unknown { background: #64748b; }
+    label { color: #334155; font-size: 13px; }
+    select { margin-left: 6px; padding: 5px 8px; border: 1px solid #cbd5e1; border-radius: 4px; background: white; }
+    svg { display: block; width: 100%; height: 680px; border: 1px solid #d1d5db; background: #ffffff; }
+    .edge { opacity: 0.35; }
+    .edge.active { opacity: 0.9; }
+    .node { stroke: #111827; stroke-width: 1; cursor: pointer; }
+    .node.dim, .edge.dim, .label.dim { opacity: 0.12; }
+    .label { fill: #111827; font-size: 10px; font-weight: 700; pointer-events: none; text-anchor: middle; }
+    h2 { margin: 0 0 10px; font-size: 16px; }
+    table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    th, td { border-bottom: 1px solid #e5e7eb; padding: 8px 6px; text-align: left; vertical-align: top; }
+    th { position: sticky; top: 0; background: white; color: #334155; }
+    tr:hover { background: #f1f5f9; }
+    .tip { position: fixed; display: none; max-width: 420px; padding: 10px 12px; background: #020617; border: 1px solid #475569; border-radius: 6px; color: #e5e7eb; font-size: 13px; }
+    @media (max-width: 1050px) {
+      main { grid-template-columns: 1fr; }
+      .side-panel { border-left: 0; border-top: 1px solid #d1d5db; max-height: none; }
+      svg { height: 560px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>MedFlow Drug Class Interaction Graph</h1>
+    <p>354 pharmacological classes, 2191 inferred class-to-class links. The page starts with the strongest 300 links to keep the view readable.</p>
+  </header>
+  <main>
+    <section class="canvas-panel">
+      <div class="toolbar">
+        <div style="display:flex; gap:10px; align-items:center;">
+          <label>Show strongest links
+            <select id="limit">
+              <option value="25">25</option>
+              <option value="50" selected>50</option>
+              <option value="100">100</option>
+              <option value="150">150</option>
+              <option value="300">300</option>
+              <option value="500">500</option>
+            </select>
+          </label>
+          <label>Search
+            <input id="search" placeholder="type class name" style="margin-left:6px; padding:5px 8px; border:1px solid #cbd5e1; border-radius:4px;" />
+          </label>
+          <button id="btnZoomIn" title="Zoom in">＋</button>
+          <button id="btnZoomOut" title="Zoom out">−</button>
+          <button id="btnReset" title="Reset view">Reset</button>
+          <button id="btnExport" title="Export PNG">Export PNG</button>
+        </div>
+        <div class="legend" style="margin-left:12px;">
+          <label style="font-weight:600; margin-right:8px;">Severity:</label>
+          <label><input type="checkbox" class="sev-filter" data-sev="CONTRAINDICATED" checked /> <span class="contraindicated">Contraindicated</span></label>
+          <label><input type="checkbox" class="sev-filter" data-sev="MAJOR" checked /> <span class="major">Major</span></label>
+          <label><input type="checkbox" class="sev-filter" data-sev="MODERATE" checked /> <span class="moderate">Moderate</span></label>
+          <label><input type="checkbox" class="sev-filter" data-sev="MINOR" checked /> <span class="minor">Minor</span></label>
+          <label><input type="checkbox" class="sev-filter" data-sev="UNKNOWN" checked /> <span class="unknown">Unknown</span></label>
+        </div>
+      </div>
+      <svg viewBox="0 0 1000 820" role="img" aria-label="Drug class interaction graph">
+        <g id="viewport"></g>
+      </svg>
+    </section>
+    <aside class="side-panel">
+      <h2>Top Inferred Interactions</h2>
+      <table>
+        <thead>
+          <tr><th>#</th><th>Class A</th><th>Class B</th><th>Severity</th><th>Weight</th><th>Evidence Drugs</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+          <td>1</td>
+          <td>Azole Antifungal</td>
+          <td>Kinase Inhibitor</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>11</td>
+          <td>bosutinib, erlotinib, everolimus, fluconazole, gefitinib, itraconazole, ketoconazole, nilotinib</td>
+        </tr>
+<tr>
+          <td>2</td>
+          <td>Anti-Epileptic Agent</td>
+          <td>Mood Stabilizer</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>10</td>
+          <td>carbamazepine, ethosuximide, felbamate, lamotrigine, methsuximide, oxcarbazepine, phenytoin, valproic</td>
+        </tr>
+<tr>
+          <td>3</td>
+          <td>Azole Antifungal</td>
+          <td>Nonsteroidal Anti-Inflammatory Drug</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>9</td>
+          <td>celecoxib, fluconazole, flurbiprofen, ibu, ibuprofen, ketoconazole, meloxicam, naproxen</td>
+        </tr>
+<tr>
+          <td>4</td>
+          <td>Histamine-2 Receptor Antagonist</td>
+          <td>Nonsteroidal Anti-Inflammatory Drug</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>9</td>
+          <td>aspirin, cimetidine, diflunisal, ibu, ibuprofen, indomethacin, meloxicam, nabumetone</td>
+        </tr>
+<tr>
+          <td>5</td>
+          <td>Calcineurin Inhibitor Immunosuppressant</td>
+          <td>Nonsteroidal Anti-Inflammatory Drug</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>9</td>
+          <td>aspirin, cyclosporine, ibu, indomethacin, ketoprofen, naproxen, piroxicam, sulindac</td>
+        </tr>
+<tr>
+          <td>6</td>
+          <td>Azole Antifungal</td>
+          <td>Corticosteroid</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>9</td>
+          <td>budesonide, dexamethasone, fluconazole, itraconazole, ketoconazole, methylprednisolone, posaconazole, prednisone</td>
+        </tr>
+<tr>
+          <td>7</td>
+          <td>Azole Antifungal</td>
+          <td>Dihydropyridine Calcium Channel Blocker</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>9</td>
+          <td>felodipine, fluconazole, isradipine, itraconazole, ketoconazole, nifedipine, nisoldipine, posaconazole</td>
+        </tr>
+<tr>
+          <td>8</td>
+          <td>Azole Antifungal</td>
+          <td>Calcineurin Inhibitor Immunosuppressant</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>8</td>
+          <td>clotrimazole, cyclosporine, fluconazole, itraconazole, ketoconazole, posaconazole, tacrolimus, voriconazole</td>
+        </tr>
+<tr>
+          <td>9</td>
+          <td>Human Immunodeficiency Virus 1 Non-Nucleoside Analog Reverse Transcriptase Inhibitor</td>
+          <td>Human Immunodeficiency Virus Nucleoside Analog Reverse Transcriptase Inhibitor</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>8</td>
+          <td>efavirenz, emtricitabine, emtricitabine and tenofovir disoproxil fumarate, nevirapine, retrovir, rilpivirine, tenofovir disoproxil fumarate, zidovudine</td>
+        </tr>
+<tr>
+          <td>10</td>
+          <td>Human Immunodeficiency Virus Nucleoside Analog Reverse Transcriptase Inhibitor</td>
+          <td>Rifamycin Antimycobacterial</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>8</td>
+          <td>biktarvy, emtricitabine, odefsey, retrovir, rifabutin, rilpivirine, tenofovir disoproxil fumarate, zidovudine</td>
+        </tr>
+<tr>
+          <td>11</td>
+          <td>Azole Antifungal</td>
+          <td>Benzodiazepine</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>7</td>
+          <td>alprazolam, clotrimazole, diazepam, fluconazole, itraconazole, ketoconazole, triazolam</td>
+        </tr>
+<tr>
+          <td>12</td>
+          <td>Benzodiazepine</td>
+          <td>Mood Stabilizer</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>7</td>
+          <td>alprazolam, carbamazepine, clobazam, clonazepam, diazepam, lorazepam, triazolam</td>
+        </tr>
+<tr>
+          <td>13</td>
+          <td>Anti-Epileptic Agent</td>
+          <td>Atypical Antipsychotic</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>7</td>
+          <td>clozapine, lamotrigine, olanzapine, phenytoin, quetiapine, valproic, valproic acid</td>
+        </tr>
+<tr>
+          <td>14</td>
+          <td>Atypical Antipsychotic</td>
+          <td>Mood Stabilizer</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>7</td>
+          <td>aripiprazole, carbamazepine, clozapine, olanzapine, paliperidone, quetiapine, risperidone</td>
+        </tr>
+<tr>
+          <td>15</td>
+          <td>Azole Antifungal</td>
+          <td>Hmg-Coa Reductase Inhibitor</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>7</td>
+          <td>itraconazole, ketoconazole, lovastatin, posaconazole, rosuvastatin, simvastatin, voriconazole</td>
+        </tr>
+<tr>
+          <td>16</td>
+          <td>Azole Antifungal</td>
+          <td>Human Immunodeficiency Virus Nucleoside Analog Reverse Transcriptase Inhibitor</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>7</td>
+          <td>fluconazole, itraconazole, ketoconazole, posaconazole, tenofovir disoproxil fumarate, voriconazole, zidovudine</td>
+        </tr>
+<tr>
+          <td>17</td>
+          <td>Azole Antifungal</td>
+          <td>Human Immunodeficiency Virus 1 Non-Nucleoside Analog Reverse Transcriptase Inhibitor</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>7</td>
+          <td>efavirenz, fluconazole, itraconazole, ketoconazole, nevirapine, posaconazole, voriconazole</td>
+        </tr>
+<tr>
+          <td>18</td>
+          <td>Alkylating Drug</td>
+          <td>Azole Antifungal</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>7</td>
+          <td>busulfan, cyclophosphamide, fluconazole, itraconazole, ketoconazole, posaconazole, voriconazole</td>
+        </tr>
+<tr>
+          <td>19</td>
+          <td>Hepatitis C Virus Ns5A Inhibitor</td>
+          <td>Human Immunodeficiency Virus Nucleoside Analog Reverse Transcriptase Inhibitor</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>7</td>
+          <td>emtricitabine, epclusa, harvoni, retrovir, rilpivirine, tenofovir disoproxil fumarate, truvada</td>
+        </tr>
+<tr>
+          <td>20</td>
+          <td>Anti-Epileptic Agent</td>
+          <td>Benzodiazepine</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>6</td>
+          <td>clonazepam, diazepam, felbamate, lamotrigine, lorazepam, phenytoin</td>
+        </tr>
+<tr>
+          <td>21</td>
+          <td>Angiotensin 2 Receptor Blocker</td>
+          <td>Thiazide Diuretic</td>
+          <td><span class="badge major">MAJOR</span></td>
+          <td>6</td>
+          <td>amlodipine, hydrochlorothiazide, irbesartan, irbesartan and hydrochlorothiazide, valsartan, valsartan and hydrochlorothiazide</td>
+        </tr>
+<tr>
+          <td>22</td>
+          <td>Anti-Epileptic Agent</td>
+          <td>Azole Antifungal</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>6</td>
+          <td>fluconazole, itraconazole, ketoconazole, phenytoin, posaconazole, voriconazole</td>
+        </tr>
+<tr>
+          <td>23</td>
+          <td>Azole Antifungal</td>
+          <td>Estrogen</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>6</td>
+          <td>estradiol, fluconazole, itraconazole, ketoconazole, levonorgestrel and ethinyl estradiol, voriconazole</td>
+        </tr>
+<tr>
+          <td>24</td>
+          <td>Azole Antifungal</td>
+          <td>Phosphodiesterase 5 Inhibitor</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>6</td>
+          <td>avanafil, fluconazole, itraconazole, ketoconazole, sildenafil, tadalafil</td>
+        </tr>
+<tr>
+          <td>25</td>
+          <td>Alkaloid</td>
+          <td>Azole Antifungal</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>6</td>
+          <td>colchicine, fluconazole, itraconazole, ketoconazole, posaconazole, voriconazole</td>
+        </tr>
+<tr>
+          <td>26</td>
+          <td>Azole Antifungal</td>
+          <td>Mtor Inhibitor Immunosuppressant</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>6</td>
+          <td>clotrimazole, fluconazole, itraconazole, ketoconazole, sirolimus, voriconazole</td>
+        </tr>
+<tr>
+          <td>27</td>
+          <td>Azole Antifungal</td>
+          <td>Cytochrome P450 3A Inhibitor</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>6</td>
+          <td>fluconazole, itraconazole, ketoconazole, posaconazole, ritonavir, voriconazole</td>
+        </tr>
+<tr>
+          <td>28</td>
+          <td>Azole Antifungal</td>
+          <td>Rifamycin Antimycobacterial</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>6</td>
+          <td>fluconazole, itraconazole, ketoconazole, posaconazole, rifabutin, voriconazole</td>
+        </tr>
+<tr>
+          <td>29</td>
+          <td>Azole Antifungal</td>
+          <td>Protease Inhibitor</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>6</td>
+          <td>darunavir, fluconazole, itraconazole, ketoconazole, posaconazole, voriconazole</td>
+        </tr>
+<tr>
+          <td>30</td>
+          <td>Anti-Epileptic Agent</td>
+          <td>Estrogen</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>6</td>
+          <td>estradiol, estrogens, felbamate, lamotrigine, oxcarbazepine, phenytoin</td>
+        </tr>
+<tr>
+          <td>31</td>
+          <td>Anti-Epileptic Agent</td>
+          <td>Dihydropyridine Calcium Channel Blocker</td>
+          <td><span class="badge major">MAJOR</span></td>
+          <td>6</td>
+          <td>nifedipine, nimodipine, nisoldipine, phenytoin, valproic, valproic acid</td>
+        </tr>
+<tr>
+          <td>32</td>
+          <td>Human Immunodeficiency Virus Nucleoside Analog Reverse Transcriptase Inhibitor</td>
+          <td>Proton Pump Inhibitor</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>6</td>
+          <td>dexlansoprazole, esomeprazole, lansoprazole, omeprazole, retrovir, rilpivirine</td>
+        </tr>
+<tr>
+          <td>33</td>
+          <td>Barbiturate</td>
+          <td>Central Nervous System Stimulant</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>6</td>
+          <td>acetaminophen, acetaminophen and caffeine, and caffeine, and codeine phosphate, butalbital, caffeine</td>
+        </tr>
+<tr>
+          <td>34</td>
+          <td>Cytochrome P450 3A Inhibitor</td>
+          <td>Human Immunodeficiency Virus Nucleoside Analog Reverse Transcriptase Inhibitor</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>6</td>
+          <td>emtricitabine, retrovir, rilpivirine, ritonavir, tenofovir disoproxil fumarate, zidovudine</td>
+        </tr>
+<tr>
+          <td>35</td>
+          <td>Human Immunodeficiency Virus Nucleoside Analog Reverse Transcriptase Inhibitor</td>
+          <td>Protease Inhibitor</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>6</td>
+          <td>darunavir, emtricitabine, retrovir, rilpivirine, tenofovir disoproxil fumarate, zidovudine</td>
+        </tr>
+<tr>
+          <td>36</td>
+          <td>Hepatitis B Virus Nucleoside Analog Reverse Transcriptase Inhibitor</td>
+          <td>Human Immunodeficiency Virus 1 Non-Nucleoside Analog Reverse Transcriptase Inhibitor</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>6</td>
+          <td>abacavir, efavirenz, entecavir, etravirine, lamivudine, nevirapine</td>
+        </tr>
+<tr>
+          <td>37</td>
+          <td>Anti-Epileptic Agent</td>
+          <td>Nonsteroidal Anti-Inflammatory Drug</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>5</td>
+          <td>aspirin, ibu, phenytoin, valproic, valproic acid</td>
+        </tr>
+<tr>
+          <td>38</td>
+          <td>Nonsteroidal Anti-Inflammatory Drug</td>
+          <td>Sulfonylurea</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>5</td>
+          <td>glimepiride, glipizide, glyburide, ibu, ibuprofen</td>
+        </tr>
+<tr>
+          <td>39</td>
+          <td>Corticosteroid</td>
+          <td>Cytochrome P450 3A Inhibitor</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>5</td>
+          <td>budesonide, dexamethasone, methylprednisolone, prednisone, ritonavir</td>
+        </tr>
+<tr>
+          <td>40</td>
+          <td>Atypical Antipsychotic</td>
+          <td>Benzodiazepine</td>
+          <td><span class="badge contraindicated">CONTRAINDICATED</span></td>
+          <td>5</td>
+          <td>alprazolam, clozapine, diazepam, lorazepam, onfi</td>
+        </tr>
+        </tbody>
+      </table>
+    </aside>
+  </main>
+  <div class="tip"></div>
+  <script>
+    const graph = {"summary": {"totalNodes": 354, "totalEdges": 2191, "shownEdges": 300}, "nodes": [{"id": "Nonsteroidal Anti-Inflammatory Drug", "drug_count": 839, "severity": "CONTRAINDICATED", "x": 860.0, "y": 440.0, "size": 34, "color": "#dc2626"}, {"id": "Corticosteroid", "drug_count": 789, "severity": "MAJOR", "x": 859.4020581018499, "y": 460.7403141768503, "size": 34, "color": "#ea580c"}, {"id": "Benzodiazepine", "drug_count": 474, "severity": "CONTRAINDICATED", "x": 857.610218710253, "y": 481.4117311157721, "size": 28.77154105707724, "color": "#dc2626"}, {"id": "Thiazide Diuretic", "drug_count": 460, "severity": "MAJOR", "x": 854.6304341354702, "y": 501.94558244853255, "size": 28.447610589527216, "color": "#ea580c"}, {"id": "Atypical Antipsychotic", "drug_count": 355, "severity": "CONTRAINDICATED", "x": 850.4726029221945, "y": 522.273656786008, "size": 25.841443681416774, "color": "#dc2626"}, {"id": "Azole Antifungal", "drug_count": 308, "severity": "CONTRAINDICATED", "x": 845.1505369675804, "y": 542.3284263095593, "size": 24.549928774784245, "color": "#dc2626"}, {"id": "Anti-Epileptic Agent", "drug_count": 290, "severity": "MAJOR", "x": 838.6819156395114, "y": 562.0432710916537, "size": 24.029386365926403, "color": "#ea580c"}, {"id": "Muscle Relaxant", "drug_count": 258, "severity": "MODERATE", "x": 831.088227047517, "y": 581.3527004005648, "size": 23.06237840420901, "color": "#ca8a04"}, {"id": "Sulfonylurea", "drug_count": 247, "severity": "CONTRAINDICATED", "x": 822.3946966614342, "y": 600.1925702539972, "size": 22.71623364550171, "color": "#dc2626"}, {"id": "Angiotensin 2 Receptor Blocker", "drug_count": 236, "severity": "CONTRAINDICATED", "x": 812.6302035149333, "y": 618.5002964989453, "size": 22.362291495737217, "color": "#dc2626"}, {"id": "Proton Pump Inhibitor", "drug_count": 218, "severity": "CONTRAINDICATED", "x": 801.8271842722727, "y": 636.2150627099549, "size": 21.7648230602334, "color": "#dc2626"}, {"id": "Loop Diuretic", "drug_count": 216, "severity": "MAJOR", "x": 790.0215254769619, "y": 653.2780222151732, "size": 21.69693845669907, "color": "#ea580c"}, {"id": "Hmg-Coa Reductase Inhibitor", "drug_count": 192, "severity": "CONTRAINDICATED", "x": 777.2524443402731, "y": 669.6324935790748, "size": 20.856406460551018, "color": "#dc2626"}, {"id": "Histamine-2 Receptor Antagonist", "drug_count": 185, "severity": "MAJOR", "x": 763.5623584656087, "y": 685.2241488924897, "size": 20.601470508735446, "color": "#ea580c"}, {"id": "Nitroimidazole Antimicrobial", "drug_count": 181, "severity": "CONTRAINDICATED", "x": 748.9967449414899, "y": 700.0011942444546, "size": 20.45362404707371, "color": "#dc2626"}, {"id": "Herpes Simplex Virus Nucleoside Analog Dna Polymerase Inhibitor", "drug_count": 181, "severity": "MINOR", "x": 733.6039892712406, "y": 713.9145417763762, "size": 20.45362404707371, "color": "#16a34a"}, {"id": "Peroxisome Proliferator Receptor Alpha Agonist", "drug_count": 179, "severity": "CONTRAINDICATED", "x": 717.435224641212, "y": 726.9179727469607, "size": 20.379088160259652, "color": "#dc2626"}, {"id": "Xanthine Oxidase Inhibitor", "drug_count": 163, "severity": "CONTRAINDICATED", "x": 700.5441620614797, "y": 738.9682910662248, "size": 19.767145334803704, "color": "#dc2626"}, {"id": "Beta-Adrenergic Blocker", "drug_count": 161, "severity": "CONTRAINDICATED", "x": 682.9869119432701, "y": 750.0254667885622, "size": 19.688577540449522, "color": "#dc2626"}, {"id": "Estrogen", "drug_count": 150, "severity": "CONTRAINDICATED", "x": 664.8217977058162, "y": 760.0527690881975, "size": 19.24744871391589, "color": "#dc2626"}, {"id": "Phosphodiesterase 5 Inhibitor", "drug_count": 140, "severity": "CONTRAINDICATED", "x": 646.1091620318249, "y": 769.016888275295, "size": 18.83215956619923, "color": "#dc2626"}, {"id": "Aldosterone Antagonist", "drug_count": 137, "severity": "CONTRAINDICATED", "x": 626.9111664151534, "y": 776.8880464473996, "size": 18.704699910719626, "color": "#dc2626"}, {"id": "Retinoid", "drug_count": 135, "severity": "CONTRAINDICATED", "x": 607.2915846665783, "y": 783.6400964086329, "size": 18.618950038622252, "color": "#dc2626"}, {"id": "Alpha-Adrenergic Blocker", "drug_count": 124, "severity": "CONTRAINDICATED", "x": 587.315591063608, "y": 789.2506085280493, "size": 18.135528725660045, "color": "#dc2626"}, {"id": "Dihydropyridine Calcium Channel Blocker", "drug_count": 118, "severity": "MAJOR", "x": 567.0495438480898, "y": 793.7009452486141, "size": 17.862780491200215, "color": "#ea580c"}, {"id": "Amide Local Anesthetic", "drug_count": 116, "severity": "MODERATE", "x": 546.5607647908015, "y": 796.9763229992932, "size": 17.77032961426901, "color": "#ca8a04"}, {"id": "Nitrate Vasodilator", "drug_count": 109, "severity": "CONTRAINDICATED", "x": 525.9173155553002, "y": 799.0658613045899, "size": 17.440306508910552, "color": "#dc2626"}, {"id": "Nucleoside Metabolic Inhibitor", "drug_count": 102, "severity": "MAJOR", "x": 505.1877716039206, "y": 799.9626189283904, "size": 17.099504938362077, "color": "#ea580c"}, {"id": "5-Alpha Reductase Inhibitor", "drug_count": 99, "severity": "MODERATE", "x": 484.4409943969854, "y": 799.6636169320514, "size": 16.9498743710662, "color": "#ca8a04"}, {"id": "Alpha-Adrenergic Agonist", "drug_count": 91, "severity": "MAJOR", "x": 463.74590264195905, "y": 798.1698485701354, "size": 16.539392014169458, "color": "#ea580c"}, {"id": "Kinase Inhibitor", "drug_count": 89, "severity": "CONTRAINDICATED", "x": 443.1712433524326, "y": 795.4862759909187, "size": 16.4339811320566, "color": "#dc2626"}, {"id": "Fluoroquinolone Antibacterial", "drug_count": 86, "severity": "CONTRAINDICATED", "x": 422.7853634774581, "y": 791.6218137526336, "size": 16.273618495495704, "color": "#dc2626"}, {"id": "Mood Stabilizer", "drug_count": 85, "severity": "CONTRAINDICATED", "x": 402.6559828598572, "y": 786.589299210203, "size": 16.219544457292887, "color": "#dc2626"}, {"id": "Barbiturate", "drug_count": 80, "severity": "CONTRAINDICATED", "x": 382.8499692777137, "y": 780.4054498708376, "size": 15.94427190999916, "color": "#dc2626"}, {"id": "Melatonin Receptor Agonist", "drug_count": 72, "severity": "MAJOR", "x": 363.4331163163392, "y": 773.0908078601592, "size": 15.48528137423857, "color": "#ea580c"}, {"id": "Androgen", "drug_count": 69, "severity": "MODERATE", "x": 344.4699248085994, "y": 764.6696716833237, "size": 15.306623862918075, "color": "#ca8a04"}, {"id": "Factor Xa Inhibitor", "drug_count": 64, "severity": "MAJOR", "x": 326.02338856963377, "y": 755.1700155078324, "size": 15.0, "color": "#ea580c"}, {"id": "Angiotensin Converting Enzyme Inhibitor", "drug_count": 64, "severity": "CONTRAINDICATED", "x": 308.15478513773695, "y": 744.6233962361594, "size": 15.0, "color": "#dc2626"}, {"id": "Aromatic Amino Acid Decarboxylation Inhibitor", "drug_count": 59, "severity": "CONTRAINDICATED", "x": 290.9234722165388, "y": 733.0648486768954, "size": 14.681145747868609, "color": "#dc2626"}, {"id": "Alkaloid", "drug_count": 59, "severity": "CONTRAINDICATED", "x": 274.386690494682, "y": 720.5327691626374, "size": 14.681145747868609, "color": "#dc2626"}, {"id": "Aluminum Complex", "drug_count": 55, "severity": "UNKNOWN", "x": 258.59937349801146, "y": 707.0687880012329, "size": 14.416198487095663, "color": "#64748b"}, {"id": "Human Immunodeficiency Virus Nucleoside Analog Reverse Transcriptase Inhibitor", "drug_count": 49, "severity": "CONTRAINDICATED", "x": 243.61396510592533, "y": 692.7176311840833, "size": 14.0, "color": "#dc2626"}, {"id": "Human Immunodeficiency Virus 1 Non-Nucleoside Analog Reverse Transcriptase Inhibitor", "drug_count": 46, "severity": "CONTRAINDICATED", "x": 229.48024533808206, "y": 677.5269718108992, "size": 13.782329983125269, "color": "#dc2626"}, {"id": "Hepatitis B Virus Nucleoside Analog Reverse Transcriptase Inhibitor", "drug_count": 44, "severity": "CONTRAINDICATED", "x": 216.2451649901813, "y": 661.5472717244575, "size": 13.6332495807108, "color": "#dc2626"}, {"id": "Platinum-Based Drug", "drug_count": 44, "severity": "MODERATE", "x": 203.95268966814177, "y": 644.831613881433, "size": 13.6332495807108, "color": "#ca8a04"}, {"id": "Cardiac Glycoside", "drug_count": 43, "severity": "MAJOR", "x": 192.64365373878007, "y": 627.435526016156, "size": 13.557438524302, "color": "#ea580c"}, {"id": "Dietary Cholesterol Absorption Inhibitor", "drug_count": 43, "severity": "CONTRAINDICATED", "x": 182.35562468215136, "y": 609.4167961830635, "size": 13.557438524302, "color": "#dc2626"}, {"id": "Macrolide Antimicrobial", "drug_count": 43, "severity": "CONTRAINDICATED", "x": 173.12277829615704, "y": 590.8352807905919, "size": 13.557438524302, "color": "#dc2626"}, {"id": "Alkylating Drug", "drug_count": 41, "severity": "MAJOR", "x": 164.9757851679829, "y": 571.7527057642098, "size": 13.403124237432849, "color": "#ea580c"}, {"id": "General Anesthetic", "drug_count": 41, "severity": "MAJOR", "x": 157.94170878949137, "y": 552.2324614990996, "size": 13.403124237432849, "color": "#ea580c"}, {"id": "Microtubule Inhibitor", "drug_count": 39, "severity": "MAJOR", "x": 152.04391565502408, "y": 532.3393922836403, "size": 13.244997998398398, "color": "#ea580c"}, {"id": "Anti-Anginal", "drug_count": 38, "severity": "CONTRAINDICATED", "x": 147.3019976402573, "y": 512.1395808932027, "size": 13.164414002968975, "color": "#dc2626"}, {"id": "Vitamin C", "drug_count": 38, "severity": "MODERATE", "x": 143.73170691996114, "y": 491.700129069815, "size": 13.164414002968975, "color": "#ca8a04"}, {"id": "Prostaglandin E1 Analog", "drug_count": 36, "severity": "MAJOR", "x": 141.34490364085912, "y": 471.08893461692384, "size": 13.0, "color": "#ea580c"}, {"id": "P2Y12 Platelet Inhibitor", "drug_count": 36, "severity": "MODERATE", "x": 140.14951652341358, "y": 450.3744658497201, "size": 13.0, "color": "#ca8a04"}, {"id": "Tetracycline-Class Drug", "drug_count": 36, "severity": "UNKNOWN", "x": 140.14951652341358, "y": 429.62553415028003, "size": 13.0, "color": "#64748b"}, {"id": "Endothelin Receptor Antagonist", "drug_count": 31, "severity": "CONTRAINDICATED", "x": 141.34490364085912, "y": 408.9110653830762, "size": 12.567764362830022, "color": "#dc2626"}, {"id": "Mtor Inhibitor Immunosuppressant", "drug_count": 28, "severity": "CONTRAINDICATED", "x": 143.73170691996108, "y": 388.2998709301851, "size": 12.291502622129181, "color": "#dc2626"}, {"id": "Carbonic Anhydrase Inhibitor", "drug_count": 27, "severity": "CONTRAINDICATED", "x": 147.3019976402573, "y": 367.86041910679734, "size": 12.196152422706632, "color": "#dc2626"}, {"id": "Antimycobacterial", "drug_count": 25, "severity": "MAJOR", "x": 152.04391565502408, "y": 347.6606077163598, "size": 12.0, "color": "#ea580c"}, {"id": "Vitamin D2 Analog", "drug_count": 24, "severity": "MODERATE", "x": 157.94170878949132, "y": 327.7675385009006, "size": 11.898979485566356, "color": "#ca8a04"}, {"id": "Macrolide", "drug_count": 24, "severity": "CONTRAINDICATED", "x": 164.97578516798285, "y": 308.2472942357902, "size": 11.898979485566356, "color": "#dc2626"}, {"id": "Purine Antimetabolite", "drug_count": 23, "severity": "MAJOR", "x": 173.12277829615698, "y": 289.1647192094082, "size": 11.79583152331272, "color": "#ea580c"}, {"id": "Cytochrome P450 3A Inhibitor", "drug_count": 21, "severity": "CONTRAINDICATED", "x": 182.3556246821513, "y": 270.5832038169366, "size": 11.582575694955839, "color": "#dc2626"}, {"id": "Catechol-O-Methyltransferase Inhibitor", "drug_count": 20, "severity": "CONTRAINDICATED", "x": 192.64365373878007, "y": 252.56447398384407, "size": 11.47213595499958, "color": "#dc2626"}, {"id": "Glinide", "drug_count": 19, "severity": "UNKNOWN", "x": 203.95268966814166, "y": 235.16838611856724, "size": 11.358898943540673, "color": "#64748b"}, {"id": "Progestin", "drug_count": 19, "severity": "MODERATE", "x": 216.24516499018125, "y": 218.45272827554265, "size": 11.358898943540673, "color": "#ca8a04"}, {"id": "Methylxanthine", "drug_count": 19, "severity": "MODERATE", "x": 229.48024533808206, "y": 202.47302818910072, "size": 11.358898943540673, "color": "#ca8a04"}, {"id": "Calcineurin Inhibitor Immunosuppressant", "drug_count": 17, "severity": "CONTRAINDICATED", "x": 243.61396510592527, "y": 187.28236881591678, "size": 11.123105625617661, "color": "#dc2626"}, {"id": "Folate Analog Metabolic Inhibitor", "drug_count": 17, "severity": "MAJOR", "x": 258.59937349801135, "y": 172.93121199876725, "size": 11.123105625617661, "color": "#ea580c"}, {"id": "Potassium Binder", "drug_count": 16, "severity": "MODERATE", "x": 274.38669049468183, "y": 159.46723083736276, "size": 11.0, "color": "#ca8a04"}, {"id": "Pyrimidine Synthesis Inhibitor", "drug_count": 15, "severity": "UNKNOWN", "x": 290.92347221653876, "y": 146.93515132310466, "size": 10.872983346207416, "color": "#64748b"}, {"id": "Platelet Aggregation Inhibitor", "drug_count": 15, "severity": "UNKNOWN", "x": 308.1547851377369, "y": 135.3766037638407, "size": 10.872983346207416, "color": "#64748b"}, {"id": "Anthelmintic", "drug_count": 14, "severity": "CONTRAINDICATED", "x": 326.02338856963354, "y": 124.82998449216768, "size": 10.74165738677394, "color": "#dc2626"}, {"id": "Central Nervous System Stimulant", "drug_count": 14, "severity": "CONTRAINDICATED", "x": 344.46992480859933, "y": 115.33032831667623, "size": 10.74165738677394, "color": "#dc2626"}, {"id": "Potassium-Sparing Diuretic", "drug_count": 13, "severity": "MAJOR", "x": 363.433116316339, "y": 106.90919213984097, "size": 10.60555127546399, "color": "#ea580c"}, {"id": "Dihydrofolate Reductase Inhibitor Antibacterial", "drug_count": 12, "severity": "CONTRAINDICATED", "x": 382.8499692777134, "y": 99.59455012916243, "size": 10.464101615137753, "color": "#dc2626"}, {"id": "Phosphodiesterase 3 Inhibitor", "drug_count": 11, "severity": "MODERATE", "x": 402.6559828598571, "y": 93.41070078979709, "size": 10.3166247903554, "color": "#ca8a04"}, {"id": "Partial Opioid Agonist", "drug_count": 11, "severity": "MAJOR", "x": 422.7853634774578, "y": 88.3781862473665, "size": 10.3166247903554, "color": "#ea580c"}, {"id": "Antiarrhythmic", "drug_count": 11, "severity": "CONTRAINDICATED", "x": 443.17124335243244, "y": 84.51372400908139, "size": 10.3166247903554, "color": "#dc2626"}, {"id": "Substance P/Neurokinin-1 Receptor Antagonist", "drug_count": 11, "severity": "CONTRAINDICATED", "x": 463.74590264195876, "y": 81.83015142986471, "size": 10.3166247903554, "color": "#dc2626"}, {"id": "Progesterone", "drug_count": 11, "severity": "MODERATE", "x": 484.44099439698533, "y": 80.3363830679487, "size": 10.3166247903554, "color": "#ca8a04"}, {"id": "Cannabinoid", "drug_count": 10, "severity": "MODERATE", "x": 505.1877716039204, "y": 80.03738107160967, "size": 10.16227766016838, "color": "#ca8a04"}, {"id": "Vasopressin V2 Receptor Antagonist", "drug_count": 10, "severity": "CONTRAINDICATED", "x": 525.9173155553001, "y": 80.93413869541007, "size": 10.16227766016838, "color": "#dc2626"}, {"id": "Rifamycin Antibacterial", "drug_count": 10, "severity": "CONTRAINDICATED", "x": 546.5607647908016, "y": 83.02367700070687, "size": 10.16227766016838, "color": "#dc2626"}, {"id": "Aromatic Amino Acid", "drug_count": 10, "severity": "CONTRAINDICATED", "x": 567.0495438480898, "y": 86.29905475138594, "size": 10.16227766016838, "color": "#dc2626"}, {"id": "Rifamycin Antimycobacterial", "drug_count": 9, "severity": "CONTRAINDICATED", "x": 587.3155910636079, "y": 90.74939147195067, "size": 10.0, "color": "#dc2626"}, {"id": "Opioid Agonist", "drug_count": 9, "severity": "MAJOR", "x": 607.2915846665779, "y": 96.35990359136707, "size": 10.0, "color": "#ea580c"}, {"id": "Protease Inhibitor", "drug_count": 8, "severity": "CONTRAINDICATED", "x": 626.911166415153, "y": 103.11195355260031, "size": 9.82842712474619, "color": "#dc2626"}, {"id": "Lipid-Based Polyene Antifungal", "drug_count": 7, "severity": "MODERATE", "x": 646.109162031825, "y": 110.98311172470505, "size": 9.64575131106459, "color": "#ca8a04"}, {"id": "Alpha-Glucosidase Inhibitor", "drug_count": 7, "severity": "UNKNOWN", "x": 664.8217977058162, "y": 119.94723091180254, "size": 9.64575131106459, "color": "#64748b"}, {"id": "Nucleoside Analog Antiviral", "drug_count": 7, "severity": "CONTRAINDICATED", "x": 682.9869119432699, "y": 129.97453321143763, "size": 9.64575131106459, "color": "#dc2626"}, {"id": "Echinocandin Antifungal", "drug_count": 7, "severity": "UNKNOWN", "x": 700.5441620614795, "y": 141.031708933775, "size": 9.64575131106459, "color": "#64748b"}, {"id": "Progestin Antagonist", "drug_count": 5, "severity": "CONTRAINDICATED", "x": 717.4352246412118, "y": 153.0820272530392, "size": 9.23606797749979, "color": "#dc2626"}, {"id": "Janus Kinase Inhibitor", "drug_count": 5, "severity": "CONTRAINDICATED", "x": 733.6039892712406, "y": 166.08545822362385, "size": 9.23606797749979, "color": "#dc2626"}, {"id": "Aldehyde Dehydrogenase Inhibitor", "drug_count": 5, "severity": "MODERATE", "x": 748.9967449414899, "y": 179.99880575554533, "size": 9.23606797749979, "color": "#ca8a04"}, {"id": "Cystic Fibrosis Transmembrane Conductance Regulator Potentiator", "drug_count": 4, "severity": "MAJOR", "x": 763.5623584656087, "y": 194.7758511075101, "size": 9.0, "color": "#ea580c"}, {"id": "Hepatitis C Virus Ns5A Inhibitor", "drug_count": 4, "severity": "CONTRAINDICATED", "x": 777.252444340273, "y": 210.36750642092517, "size": 9.0, "color": "#dc2626"}, {"id": "Prostacyclin Receptor Agonist", "drug_count": 3, "severity": "CONTRAINDICATED", "x": 790.0215254769619, "y": 226.72197778482663, "size": 8.732050807568877, "color": "#dc2626"}, {"id": "Orexin Receptor Antagonist", "drug_count": 3, "severity": "MAJOR", "x": 801.8271842722727, "y": 243.78493729004515, "size": 8.732050807568877, "color": "#ea580c"}, {"id": "Hepatitis C Virus Nucleotide Analog Ns5B Polymerase Inhibitor", "drug_count": 3, "severity": "CONTRAINDICATED", "x": 812.6302035149333, "y": 261.49970350105457, "size": 8.732050807568877, "color": "#dc2626"}, {"id": "Penem Antibacterial", "drug_count": 3, "severity": "MODERATE", "x": 822.3946966614342, "y": 279.80742974600275, "size": 8.732050807568877, "color": "#ca8a04"}, {"id": "Opioid Antagonist", "drug_count": 3, "severity": "MAJOR", "x": 831.088227047517, "y": 298.6472995994352, "size": 8.732050807568877, "color": "#ea580c"}, {"id": "Calcitonin Gene-Related Peptide Receptor Antagonist", "drug_count": 2, "severity": "MODERATE", "x": 838.6819156395113, "y": 317.9567289083461, "size": 8.414213562373096, "color": "#ca8a04"}, {"id": "Intestinal Lipase Inhibitor", "drug_count": 2, "severity": "MODERATE", "x": 845.1505369675804, "y": 337.67157369044065, "size": 8.414213562373096, "color": "#ca8a04"}, {"id": "Neuroactive Steroid Gamma-Aminobutyric Acid A Receptor Positive Modulator", "drug_count": 2, "severity": "MODERATE", "x": 850.4726029221945, "y": 357.7263432139921, "size": 8.414213562373096, "color": "#ca8a04"}, {"id": "Hepatitis C Virus Ns3/4A Protease Inhibitor", "drug_count": 1, "severity": "CONTRAINDICATED", "x": 854.6304341354702, "y": 378.05441755146745, "size": 8, "color": "#dc2626"}, {"id": "Cytomegalovirus Dna Terminase Complex Inhibitor", "drug_count": 1, "severity": "CONTRAINDICATED", "x": 857.610218710253, "y": 398.5882688842278, "size": 8, "color": "#dc2626"}, {"id": "Serotonin Reuptake Inhibitor", "drug_count": 1, "severity": "CONTRAINDICATED", "x": 859.4020581018499, "y": 419.2596858231494, "size": 8, "color": "#dc2626"}], "edges": [{"source": "Azole Antifungal", "target": "Kinase Inhibitor", "weight": 11, "severity": "CONTRAINDICATED", "shared_drugs": "bosutinib, erlotinib, everolimus, fluconazole, gefitinib, itraconazole, ketoconazole, nilotinib", "width": 3.4849066497880004, "color": "#dc2626"}, {"source": "Anti-Epileptic Agent", "target": "Mood Stabilizer", "weight": 10, "severity": "CONTRAINDICATED", "shared_drugs": "carbamazepine, ethosuximide, felbamate, lamotrigine, methsuximide, oxcarbazepine, phenytoin, valproic", "width": 3.3978952727983707, "color": "#dc2626"}, {"source": "Azole Antifungal", "target": "Nonsteroidal Anti-Inflammatory Drug", "weight": 9, "severity": "CONTRAINDICATED", "shared_drugs": "celecoxib, fluconazole, flurbiprofen, ibu, ibuprofen, ketoconazole, meloxicam, naproxen", "width": 3.302585092994046, "color": "#dc2626"}, {"source": "Histamine-2 Receptor Antagonist", "target": "Nonsteroidal Anti-Inflammatory Drug", "weight": 9, "severity": "CONTRAINDICATED", "shared_drugs": "aspirin, cimetidine, diflunisal, ibu, ibuprofen, indomethacin, meloxicam, nabumetone", "width": 3.302585092994046, "color": "#dc2626"}, {"source": "Calcineurin Inhibitor Immunosuppressant", "target": "Nonsteroidal Anti-Inflammatory Drug", "weight": 9, "severity": "CONTRAINDICATED", "shared_drugs": "aspirin, cyclosporine, ibu, indomethacin, ketoprofen, naproxen, piroxicam, sulindac", "width": 3.302585092994046, "color": "#dc2626"}, {"source": "Azole Antifungal", "target": "Corticosteroid", "weight": 9, "severity": "CONTRAINDICATED", "shared_drugs": "budesonide, dexamethasone, fluconazole, itraconazole, ketoconazole, methylprednisolone, posaconazole, prednisone", "width": 3.302585092994046, "color": "#dc2626"}, {"source": "Azole Antifungal", "target": "Dihydropyridine Calcium Channel Blocker", "weight": 9, "severity": "CONTRAINDICATED", "shared_drugs": "felodipine, fluconazole, isradipine, itraconazole, ketoconazole, nifedipine, nisoldipine, posaconazole", "width": 3.302585092994046, "color": "#dc2626"}, {"source": "Azole Antifungal", "target": "Calcineurin Inhibitor Immunosuppressant", "weight": 8, "severity": "CONTRAINDICATED", "shared_drugs": "clotrimazole, cyclosporine, fluconazole, itraconazole, ketoconazole, posaconazole, tacrolimus, voriconazole", "width": 3.1972245773362196, "color": "#dc2626"}, {"source": "Human Immunodeficiency Virus 1 Non-Nucleoside Analog Reverse Transcriptase Inhibitor", "target": "Human Immunodeficiency Virus Nucleoside Analog Reverse Transcriptase Inhibitor", "weight": 8, "severity": "CONTRAINDICATED", "shared_drugs": "efavirenz, emtricitabine, emtricitabine and tenofovir disoproxil fumarate, nevirapine, retrovir, rilpivirine, tenofovir disoproxil fumarate, zidovudine", "width": 3.1972245773362196, "color": "#dc2626"}, {"source": "Human Immunodeficiency Virus Nucleoside Analog Reverse Transcriptase Inhibitor", "target": "Rifamycin Antimycobacterial", "weight": 8, "severity": "CONTRAINDICATED", "shared_drugs": "biktarvy, emtricitabine, odefsey, retrovir, rifabutin, rilpivirine, tenofovir disoproxil fumarate, zidovudine", "width": 3.1972245773362196, "color": "#dc2626"}, {"source": "Azole Antifungal", "target": "Benzodiazepine", "weight": 7, "severity": "CONTRAINDICATED", "shared_drugs": "alprazolam, clotrimazole, diazepam, fluconazole, itraconazole, ketoconazole, triazolam", "width": 3.0794415416798357, "color": "#dc2626"}, {"source": "Benzodiazepine", "target": "Mood Stabilizer", "weight": 7, "severity": "CONTRAINDICATED", "shared_drugs": "alprazolam, carbamazepine, clobazam, clonazepam, diazepam, lorazepam, triazolam", "width": 3.0794415416798357, "color": "#dc2626"}, {"source": "Anti-Epileptic Agent", "target": "Atypical Antipsychotic", "weight": 7, "severity": "CONTRAINDICATED", "shared_drugs": "clozapine, lamotrigine, olanzapine, phenytoin, quetiapine, valproic, valproic acid", "width": 3.0794415416798357, "color": "#dc2626"}, {"source": "Atypical Antipsychotic", "target": "Mood Stabilizer", "weight": 7, "severity": "CONTRAINDICATED", "shared_drugs": "aripiprazole, carbamazepine, clozapine, olanzapine, paliperidone, quetiapine, risperidone", "width": 3.0794415416798357, "color": "#dc2626"}, {"source": "Azole Antifungal", "target": "Hmg-Coa Reductase Inhibitor", "weight": 7, "severity": "CONTRAINDICATED", "shared_drugs": "itraconazole, ketoconazole, lovastatin, posaconazole, rosuvastatin, simvastatin, voriconazole", "width": 3.0794415416798357, "color": "#dc2626"}, {"source": "Azole Antifungal", "target": "Human Immunodeficiency Virus Nucleoside Analog Reverse Transcriptase Inhibitor", "weight": 7, "severity": "CONTRAINDICATED", "shared_drugs": "fluconazole, itraconazole, ketoconazole, posaconazole, tenofovir disoproxil fumarate, voriconazole, zidovudine", "width": 3.0794415416798357, "color": "#dc2626"}, {"source": "Azole Antifungal", "target": "Human Immunodeficiency Virus 1 Non-Nucleoside Analog Reverse Transcriptase Inhibitor", "weight": 7, "severity": "CONTRAINDICATED", "shared_drugs": "efavirenz, fluconazole, itraconazole, ketoconazole, nevirapine, posaconazole, voriconazole", "width": 3.0794415416798357, "color": "#dc2626"}, {"source": "Alkylating Drug", "target": "Azole Antifungal", "weight": 7, "severity": "CONTRAINDICATED", "shared_drugs": "busulfan, cyclophosphamide, fluconazole, itraconazole, ketoconazole, posaconazole, voriconazole", "width": 3.0794415416798357, "color": "#dc2626"}, {"source": "Hepatitis C Virus Ns5A Inhibitor", "target": "Human Immunodeficiency Virus Nucleoside Analog Reverse Transcriptase Inhibitor", "weight": 7, "severity": "CONTRAINDICATED", "shared_drugs": "emtricitabine, epclusa, harvoni, retrovir, rilpivirine, tenofovir disoproxil fumarate, truvada", "width": 3.0794415416798357, "color": "#dc2626"}, {"source": "Anti-Epileptic Agent", "target": "Benzodiazepine", "weight": 6, "severity": "CONTRAINDICATED", "shared_drugs": "clonazepam, diazepam, felbamate, lamotrigine, lorazepam, phenytoin", "width": 2.9459101490553135, "color": "#dc2626"}, {"source": "Angiotensin 2 Receptor Blocker", "target": "Thiazide Diuretic", "weight": 6, "severity": "MAJOR", "shared_drugs": "amlodipine, hydrochlorothiazide, irbesartan, irbesartan and hydrochlorothiazide, valsartan, valsartan and hydrochlorothiazide", "width": 2.9459101490553135, "color": "#ea580c"}, {"source": "Anti-Epileptic Agent", "target": "Azole Antifungal", "weight": 6, "severity": "CONTRAINDICATED", "shared_drugs": "fluconazole, itraconazole, ketoconazole, phenytoin, posaconazole, voriconazole", "width": 2.9459101490553135, "color": "#dc2626"}, {"source": "Azole Antifungal", "target": "Estrogen", "weight": 6, "severity": "CONTRAINDICATED", "shared_drugs": "estradiol, fluconazole, itraconazole, ketoconazole, levonorgestrel and ethinyl estradiol, voriconazole", "width": 2.9459101490553135, "color": "#dc2626"}, {"source": "Azole Antifungal", "target": "Phosphodiesterase 5 Inhibitor", "weight": 6, "severity": "CONTRAINDICATED", "shared_drugs": "avanafil, fluconazole, itraconazole, ketoconazole, sildenafil, tadalafil", "width": 2.9459101490553135, "color": "#dc2626"}, {"source": "Alkaloid", "target": "Azole Antifungal", "weight": 6, "severity": "CONTRAINDICATED", "shared_drugs": "colchicine, fluconazole, itraconazole, ketoconazole, posaconazole, voriconazole", "width": 2.9459101490553135, "color": "#dc2626"}, {"source": "Azole Antifungal", "target": "Mtor Inhibitor Immunosuppressant", "weight": 6, "severity": "CONTRAINDICATED", "shared_drugs": "clotrimazole, fluconazole, itraconazole, ketoconazole, sirolimus, voriconazole", "width": 2.9459101490553135, "color": "#dc2626"}, {"source": "Azole Antifungal", "target": "Cytochrome P450 3A Inhibitor", "weight": 6, "severity": "CONTRAINDICATED", "shared_drugs": "fluconazole, itraconazole, ketoconazole, posaconazole, ritonavir, voriconazole", "width": 2.9459101490553135, "color": "#dc2626"}, {"source": "Azole Antifungal", "target": "Rifamycin Antimycobacterial", "weight": 6, "severity": "CONTRAINDICATED", "shared_drugs": "fluconazole, itraconazole, ketoconazole, posaconazole, rifabutin, voriconazole", "width": 2.9459101490553135, "color": "#dc2626"}, {"source": "Azole Antifungal", "target": "Protease Inhibitor", "weight": 6, "severity": "CONTRAINDICATED", "shared_drugs": "darunavir, fluconazole, itraconazole, ketoconazole, posaconazole, voriconazole", "width": 2.9459101490553135, "color": "#dc2626"}, {"source": "Anti-Epileptic Agent", "target": "Estrogen", "weight": 6, "severity": "CONTRAINDICATED", "shared_drugs": "estradiol, estrogens, felbamate, lamotrigine, oxcarbazepine, phenytoin", "width": 2.9459101490553135, "color": "#dc2626"}, {"source": "Anti-Epileptic Agent", "target": "Dihydropyridine Calcium Channel Blocker", "weight": 6, "severity": "MAJOR", "shared_drugs": "nifedipine, nimodipine, nisoldipine, phenytoin, valproic, valproic acid", "width": 2.9459101490553135, "color": "#ea580c"}, {"source": "Human Immunodeficiency Virus Nucleoside Analog Reverse Transcriptase Inhibitor", "target": "Proton Pump Inhibitor", "weight": 6, "severity": "CONTRAINDICATED", "shared_drugs": "dexlansoprazole, esomeprazole, lansoprazole, omeprazole, retrovir, rilpivirine", "width": 2.9459101490553135, "color": "#dc2626"}, {"source": "Barbiturate", "target": "Central Nervous System Stimulant", "weight": 6, "severity": "CONTRAINDICATED", "shared_drugs": "acetaminophen, acetaminophen and caffeine, and caffeine, and codeine phosphate, butalbital, caffeine", "width": 2.9459101490553135, "color": "#dc2626"}, {"source": "Cytochrome P450 3A Inhibitor", "target": "Human Immunodeficiency Virus Nucleoside Analog Reverse Transcriptase Inhibitor", "weight": 6, "severity": "CONTRAINDICATED", "shared_drugs": "emtricitabine, retrovir, rilpivirine, ritonavir, tenofovir disoproxil fumarate, zidovudine", "width": 2.9459101490553135, "color": "#dc2626"}, {"source": "Human Immunodeficiency Virus Nucleoside Analog Reverse Transcriptase Inhibitor", "target": "Protease Inhibitor", "weight": 6, "severity": "CONTRAINDICATED", "shared_drugs": "darunavir, emtricitabine, retrovir, rilpivirine, tenofovir disoproxil fumarate, zidovudine", "width": 2.9459101490553135, "color": "#dc2626"}, {"source": "Hepatitis B Virus Nucleoside Analog Reverse Transcriptase Inhibitor", "target": "Human Immunodeficiency Virus 1 Non-Nucleoside Analog Reverse Transcriptase Inhibitor", "weight": 6, "severity": "CONTRAINDICATED", "shared_drugs": "abacavir, efavirenz, entecavir, etravirine, lamivudine, nevirapine", "width": 2.9459101490553135, "color": "#dc2626"}, {"source": "Anti-Epileptic Agent", "target": "Nonsteroidal Anti-Inflammatory Drug", "weight": 5, "severity": "CONTRAINDICATED", "shared_drugs": "aspirin, ibu, phenytoin, valproic, valproic acid", "width": 2.791759469228055, "color": "#dc2626"}, {"source": "Nonsteroidal Anti-Inflammatory Drug", "target": "Sulfonylurea", "weight": 5, "severity": "CONTRAINDICATED", "shared_drugs": "glimepiride, glipizide, glyburide, ibu, ibuprofen", "width": 2.791759469228055, "color": "#dc2626"}, {"source": "Corticosteroid", "target": "Cytochrome P450 3A Inhibitor", "weight": 5, "severity": "CONTRAINDICATED", "shared_drugs": "budesonide, dexamethasone, methylprednisolone, prednisone, ritonavir", "width": 2.791759469228055, "color": "#dc2626"}, {"source": "Atypical Antipsychotic", "target": "Benzodiazepine", "weight": 5, "severity": "CONTRAINDICATED", "shared_drugs": "alprazolam, clozapine, diazepam, lorazepam, onfi", "width": 2.791759469228055, "color": "#dc2626"}, {"source": "Benzodiazepine", "target": "Histamine-2 Receptor Antagonist", "weight": 5, "severity": "CONTRAINDICATED", "shared_drugs": "cimetidine, diazepam, lorazepam, ranitidine, triazolam", "width": 2.791759469228055, "color": "#dc2626"}, {"source": "Benzodiazepine", "target": "Macrolide Antimicrobial", "weight": 5, "severity": "CONTRAINDICATED", "shared_drugs": "alprazolam, clarithromycin, lorazepam, temazepam, triazolam", "width": 2.791759469228055, "color": "#dc2626"}, {"source": "Benzodiazepine", "target": "Cytochrome P450 3A Inhibitor", "weight": 5, "severity": "CONTRAINDICATED", "shared_drugs": "clonazepam, diazepam, estazolam, ritonavir, triazolam", "width": 2.791759469228055, "color": "#dc2626"}, {"source": "Nonsteroidal Anti-Inflammatory Drug", "target": "Thiazide Diuretic", "weight": 5, "severity": "MAJOR", "shared_drugs": "aspirin, ibu, indomethacin, naproxen, sulindac", "width": 2.791759469228055, "color": "#ea580c"}, {"source": "Atypical Antipsychotic", "target": "Azole Antifungal", "weight": 5, "severity": "CONTRAINDICATED", "shared_drugs": "aripiprazole, itraconazole, ketoconazole, quetiapine, risperidone", "width": 2.791759469228055, "color": "#dc2626"}, {"source": "Azole Antifungal", "target": "Sulfonylurea", "weight": 5, "severity": "CONTRAINDICATED", "shared_drugs": "diflucan, fluconazole, glipizide, glyburide, voriconazole", "width": 2.791759469228055, "color": "#dc2626"}, {"source": "Azole Antifungal", "target": "Proton Pump Inhibitor", "weight": 5, "severity": "CONTRAINDICATED", "shared_drugs": "esomeprazole, itraconazole, ketoconazole, omeprazole, voriconazole", "width": 2.791759469228055, "color": "#dc2626"}, {"source": "Azole Antifungal", "target": "Mood Stabilizer", "weight": 5, "severity": "CONTRAINDICATED", "shared_drugs": "carbamazepine, fluconazole, itraconazole, ketoconazole, voriconazole", "width": 2.791759469228055, "color": "#dc2626"}, {"source": "Azole Antifungal", "target": "Glinide", "weight": 5, "severity": "CONTRAINDICATED", "shared_drugs": "fluconazole, itraconazole, ketoconazole, repaglinide, voriconazole", "width": 2.791759469228055, "color": "#dc2626"}, {"source": "Azole Antifungal", "target": "Progestin", "weight": 5, "severity": "CONTRAINDICATED", "shared_drugs": "fluconazole, itraconazole, ketoconazole, norethindrone, voriconazole", "width": 2.791759469228055, "color": "#dc2626"}, {"source": "Anti-Epileptic Agent", "target": "Cytochrome P450 3A Inhibitor", "weight": 5, "severity": "CONTRAINDICATED", "shared_drugs": "ethosuximide, lamotrigine, oxcarbazepine, phenytoin, ritonavir", "width": 2.791759469228055, "color": "#dc2626"}, {"source": "P2Y12 Platelet Inhibitor", "target": "Proton Pump Inhibitor", "weight": 5, "severity": "CONTRAINDICATED", "shared_drugs": "clopidogrel, dexlansoprazole, esomeprazole, lansoprazole, omeprazole", "width": 2.791759469228055, "color": "#dc2626"}, {"source": "Hmg-Coa Reductase Inhibitor", "target": "Peroxisome Proliferator Receptor Alpha Agonist", "weight": 5, "severity": "CONTRAINDICATED", "shared_drugs": "fenofibrate, fenofibric acid, gemfibrozil, rosuvastatin, simvastatin", "width": 2.791759469228055, "color": "#dc2626"}, {"source": "Histamine-2 Receptor Antagonist", "target": "Kinase Inhibitor", "weight": 5, "severity": "CONTRAINDICATED", "shared_drugs": "erlotinib, famotidine, gefitinib, nilotinib, ranitidine", "width": 2.791759469228055, "color": "#dc2626"}, {"source": "Histamine-2 Receptor Antagonist", "target": "Human Immunodeficiency Virus Nucleoside Analog Reverse Transcriptase Inhibitor", "weight": 5, "severity": "CONTRAINDICATED", "shared_drugs": "cimetidine, famotidine, nizatidine, ranitidine, rilpivirine", "width": 2.791759469228055, "color": "#dc2626"}, {"source": "Histamine-2 Receptor Antagonist", "target": "Methylxanthine", "weight": 5, "severity": "MAJOR", "shared_drugs": "cimetidine, famotidine, nizatidine, ranitidine, theophylline", "width": 2.791759469228055, "color": "#ea580c"}, {"source": "Nitrate Vasodilator", "target": "Phosphodiesterase 5 Inhibitor", "weight": 5, "severity": "CONTRAINDICATED", "shared_drugs": "avanafil, nitroglycerin, sildenafil, tadalafil, vardenafil hydrochloride", "width": 2.791759469228055, "color": "#dc2626"}, {"source": "Cytochrome P450 3A Inhibitor", "target": "Phosphodiesterase 5 Inhibitor", "weight": 5, "severity": "CONTRAINDICATED", "shared_drugs": "adcirca, avanafil, ritonavir, sildenafil, tadalafil", "width": 2.791759469228055, "color": "#dc2626"}, {"source": "Hepatitis B Virus Nucleoside Analog Reverse Transcriptase Inhibitor", "target": "Human Immunodeficiency Virus Nucleoside Analog Reverse Transcriptase Inhibitor", "weight": 5, "severity": "CONTRAINDICATED", "shared_drugs": "entecavir, retrovir, rilpivirine, tenofovir disoproxil fumarate, zidovudine", "width": 2.791759469228055, "color": "#dc2626"}, {"source": "Hepatitis C Virus Nucleotide Analog Ns5B Polymerase Inhibitor", "target": "Human Immunodeficiency Virus Nucleoside Analog Reverse Transcriptase Inhibitor", "weight": 5, "severity": "CONTRAINDICATED", "shared_drugs": "emtricitabine, retrovir, rilpivirine, tenofovir disoproxil fumarate, vosevi", "width": 2.791759469228055, "color": "#dc2626"}, {"source": "Cytochrome P450 3A Inhibitor", "target": "Human Immunodeficiency Virus 1 Non-Nucleoside Analog Reverse Transcriptase Inhibitor", "weight": 5, "severity": "CONTRAINDICATED", "shared_drugs": "efavirenz, etravirine, kaletra, nevirapine, ritonavir", "width": 2.791759469228055, "color": "#dc2626"}, {"source": "Hepatitis C Virus Ns5A Inhibitor", "target": "Human Immunodeficiency Virus 1 Non-Nucleoside Analog Reverse Transcriptase Inhibitor", "weight": 5, "severity": "CONTRAINDICATED", "shared_drugs": "efavirenz, epclusa, etravirine, harvoni, ledipasvir and sofosbuvir", "width": 2.791759469228055, "color": "#dc2626"}, {"source": "Hepatitis B Virus Nucleoside Analog Reverse Transcriptase Inhibitor", "target": "Hepatitis C Virus Ns5A Inhibitor", "weight": 5, "severity": "CONTRAINDICATED", "shared_drugs": "abacavir, entecavir, epclusa, harvoni, lamivudine", "width": 2.791759469228055, "color": "#dc2626"}, {"source": "Azole Antifungal", "target": "Cystic Fibrosis Transmembrane Conductance Regulator Potentiator", "weight": 5, "severity": "MAJOR", "shared_drugs": "fluconazole, itraconazole, ketoconazole, posaconazole, voriconazole", "width": 2.791759469228055, "color": "#ea580c"}, {"source": "Central Nervous System Stimulant", "target": "Nonsteroidal Anti-Inflammatory Drug", "weight": 4, "severity": "CONTRAINDICATED", "shared_drugs": "acetaminophen, aspirin, butalbital, caffeine and codeine phosphate", "width": 2.6094379124341005, "color": "#dc2626"}, {"source": "Corticosteroid", "target": "Nonsteroidal Anti-Inflammatory Drug", "weight": 4, "severity": "CONTRAINDICATED", "shared_drugs": "aspirin, dexamethasone, ibu, indomethacin", "width": 2.6094379124341005, "color": "#dc2626"}, {"source": "Angiotensin 2 Receptor Blocker", "target": "Nonsteroidal Anti-Inflammatory Drug", "weight": 4, "severity": "CONTRAINDICATED", "shared_drugs": "hydrochlorothiazide, ibu, ibuprofen, indomethacin", "width": 2.6094379124341005, "color": "#dc2626"}, {"source": "Muscle Relaxant", "target": "Nonsteroidal Anti-Inflammatory Drug", "weight": 4, "severity": "CONTRAINDICATED", "shared_drugs": "aspirin, metaxalone, soma, usp", "width": 2.6094379124341005, "color": "#dc2626"}, {"source": "Angiotensin Converting Enzyme Inhibitor", "target": "Nonsteroidal Anti-Inflammatory Drug", "weight": 4, "severity": "CONTRAINDICATED", "shared_drugs": "aspirin, captopril, indomethacin, ramipril", "width": 2.6094379124341005, "color": "#dc2626"}, {"source": "Cardiac Glycoside", "target": "Nonsteroidal Anti-Inflammatory Drug", "weight": 4, "severity": "CONTRAINDICATED", "shared_drugs": "digoxin, ibu, ibuprofen, indomethacin", "width": 2.6094379124341005, "color": "#dc2626"}, {"source": "Folate Analog Metabolic Inhibitor", "target": "Nonsteroidal Anti-Inflammatory Drug", "weight": 4, "severity": "CONTRAINDICATED", "shared_drugs": "aspirin, ibu, ibuprofen, methotrexate", "width": 2.6094379124341005, "color": "#dc2626"}, {"source": "Angiotensin 2 Receptor Blocker", "target": "Azole Antifungal", "weight": 4, "severity": "CONTRAINDICATED", "shared_drugs": "amlodipine, hydrochlorothiazide, itraconazole, ketoconazole", "width": 2.6094379124341005, "color": "#dc2626"}, {"source": "Alpha-Adrenergic Blocker", "target": "Azole Antifungal", "weight": 4, "severity": "CONTRAINDICATED", "shared_drugs": "fluconazole, itraconazole, ketoconazole, silodosin", "width": 2.6094379124341005, "color": "#dc2626"}, {"source": "Azole Antifungal", "target": "Factor Xa Inhibitor", "weight": 4, "severity": "CONTRAINDICATED", "shared_drugs": "apixaban, itraconazole, ketoconazole, rivaroxaban", "width": 2.6094379124341005, "color": "#dc2626"}, {"source": "Azole Antifungal", "target": "Microtubule Inhibitor", "weight": 4, "severity": "CONTRAINDICATED", "shared_drugs": "docetaxel, itraconazole, ketoconazole, paclitaxel", "width": 2.6094379124341005, "color": "#dc2626"}, {"source": "Anti-Anginal", "target": "Azole Antifungal", "weight": 4, "severity": "CONTRAINDICATED", "shared_drugs": "fluconazole, itraconazole, ketoconazole, ranolazine", "width": 2.6094379124341005, "color": "#dc2626"}, {"source": "Azole Antifungal", "target": "P2Y12 Platelet Inhibitor", "weight": 4, "severity": "CONTRAINDICATED", "shared_drugs": "itraconazole, ketoconazole, ticagrelor, voriconazole", "width": 2.6094379124341005, "color": "#dc2626"}, {"source": "Antiarrhythmic", "target": "Azole Antifungal", "weight": 4, "severity": "CONTRAINDICATED", "shared_drugs": "dofetilide, itraconazole, ketoconazole, voriconazole", "width": 2.6094379124341005, "color": "#dc2626"}, {"source": "Azole Antifungal", "target": "Rifamycin Antibacterial", "weight": 4, "severity": "CONTRAINDICATED", "shared_drugs": "fluconazole, itraconazole, ketoconazole, rifampin", "width": 2.6094379124341005, "color": "#dc2626"}, {"source": "Azole Antifungal", "target": "Lipid-Based Polyene Antifungal", "weight": 4, "severity": "CONTRAINDICATED", "shared_drugs": "amphotericin b, clotrimazole, fluconazole, ketoconazole", "width": 2.6094379124341005, "color": "#dc2626"}, {"source": "Anti-Epileptic Agent", "target": "Human Immunodeficiency Virus 1 Non-Nucleoside Analog Reverse Transcriptase Inhibitor", "weight": 4, "severity": "CONTRAINDICATED", "shared_drugs": "efavirenz, ethosuximide, oxcarbazepine, phenytoin", "width": 2.6094379124341005, "color": "#dc2626"}, {"source": "Angiotensin 2 Receptor Blocker", "target": "Dihydropyridine Calcium Channel Blocker", "weight": 4, "severity": "CONTRAINDICATED", "shared_drugs": "amlodipine, hydrochlorothiazide, irbesartan, nifedipine", "width": 2.6094379124341005, "color": "#dc2626"}, {"source": "Angiotensin 2 Receptor Blocker", "target": "Angiotensin Converting Enzyme Inhibitor", "weight": 4, "severity": "CONTRAINDICATED", "shared_drugs": "captopril, hydrochlorothiazide, ramipril, telmisartan", "width": 2.6094379124341005, "color": "#dc2626"}, {"source": "Kinase Inhibitor", "target": "Proton Pump Inhibitor", "weight": 4, "severity": "CONTRAINDICATED", "shared_drugs": "erlotinib, esomeprazole, nilotinib, omeprazole", "width": 2.6094379124341005, "color": "#dc2626"}, {"source": "Cardiac Glycoside", "target": "Proton Pump Inhibitor", "weight": 4, "severity": "CONTRAINDICATED", "shared_drugs": "digoxin, esomeprazole, lansoprazole, omeprazole", "width": 2.6094379124341005, "color": "#dc2626"}, {"source": "Calcineurin Inhibitor Immunosuppressant", "target": "Proton Pump Inhibitor", "weight": 4, "severity": "CONTRAINDICATED", "shared_drugs": "cyclosporine, lansoprazole, omeprazole, tacrolimus", "width": 2.6094379124341005, "color": "#dc2626"}, {"source": "Androgen", "target": "Hmg-Coa Reductase Inhibitor", "weight": 4, "severity": "CONTRAINDICATED", "shared_drugs": "danazol, lovastatin, simvastatin, testosterone", "width": 2.6094379124341005, "color": "#dc2626"}, {"source": "Cytochrome P450 3A Inhibitor", "target": "Hmg-Coa Reductase Inhibitor", "weight": 4, "severity": "CONTRAINDICATED", "shared_drugs": "lovastatin, ritonavir, rosuvastatin, simvastatin", "width": 2.6094379124341005, "color": "#dc2626"}, {"source": "Calcineurin Inhibitor Immunosuppressant", "target": "Hmg-Coa Reductase Inhibitor", "weight": 4, "severity": "CONTRAINDICATED", "shared_drugs": "cyclosporine, lovastatin, rosuvastatin, simvastatin", "width": 2.6094379124341005, "color": "#dc2626"}, {"source": "Hmg-Coa Reductase Inhibitor", "target": "Protease Inhibitor", "weight": 4, "severity": "CONTRAINDICATED", "shared_drugs": "darunavir, lovastatin, rosuvastatin, simvastatin", "width": 2.6094379124341005, "color": "#dc2626"}, {"source": "Azole Antifungal", "target": "Nitroimidazole Antimicrobial", "weight": 4, "severity": "CONTRAINDICATED", "shared_drugs": "fluconazole, itraconazole, ketoconazole, voriconazole", "width": 2.6094379124341005, "color": "#dc2626"}, {"source": "Herpes Simplex Virus Nucleoside Analog Dna Polymerase Inhibitor", "target": "Human Immunodeficiency Virus Nucleoside Analog Reverse Transcriptase Inhibitor", "weight": 4, "severity": "CONTRAINDICATED", "shared_drugs": "acyclovir, emtricitabine, famciclovir, zidovudine", "width": 2.6094379124341005, "color": "#dc2626"}, {"source": "Dietary Cholesterol Absorption Inhibitor", "target": "Peroxisome Proliferator Receptor Alpha Agonist", "weight": 4, "severity": "CONTRAINDICATED", "shared_drugs": "ezetimibe, fenofibrate, fenofibric acid, gemfibrozil", "width": 2.6094379124341005, "color": "#dc2626"}, {"source": "Calcineurin Inhibitor Immunosuppressant", "target": "Peroxisome Proliferator Receptor Alpha Agonist", "weight": 4, "severity": "CONTRAINDICATED", "shared_drugs": "cyclosporine, fenofibrate, lopid, tacrolimus", "width": 2.6094379124341005, "color": "#dc2626"}, {"source": "Purine Antimetabolite", "target": "Xanthine Oxidase Inhibitor", "weight": 4, "severity": "CONTRAINDICATED", "shared_drugs": "allopurinol, azathioprine, febuxostat, imuran", "width": 2.6094379124341005, "color": "#dc2626"}, {"source": "Estrogen", "target": "Human Immunodeficiency Virus 1 Non-Nucleoside Analog Reverse Transcriptase Inhibitor", "weight": 4, "severity": "CONTRAINDICATED", "shared_drugs": "efavirenz, estradiol, etravirine, nevirapine", "width": 2.6094379124341005, "color": "#dc2626"}, {"source": "Cytochrome P450 3A Inhibitor", "target": "Kinase Inhibitor", "weight": 4, "severity": "CONTRAINDICATED", "shared_drugs": "everolimus, lopinavir and ritonavir, nilotinib, ritonavir", "width": 2.6094379124341005, "color": "#dc2626"}, {"source": "Aromatic Amino Acid", "target": "Aromatic Amino Acid Decarboxylation Inhibitor", "weight": 4, "severity": "CONTRAINDICATED", "shared_drugs": "carbidopa, carbidopa and levodopa, carbidopa-levodopa, levodopa", "width": 2.6094379124341005, "color": "#dc2626"}, {"source": "Alkaloid", "target": "Nonsteroidal Anti-Inflammatory Drug", "weight": 4, "severity": "CONTRAINDICATED", "shared_drugs": "indomethacin, ketoprofen, naproxen, sulindac", "width": 2.6094379124341005, "color": "#dc2626"}, {"source": "Benzodiazepine", "target": "Human Immunodeficiency Virus 1 Non-Nucleoside Analog Reverse Transcriptase Inhibitor", "weight": 4, "severity": "CONTRAINDICATED", "shared_drugs": "clonazepam, diazepam, lorazepam, onfi", "width": 2.6094379124341005, "color": "#dc2626"}, {"source": "Human Immunodeficiency Virus 1 Non-Nucleoside Analog Reverse Transcriptase Inhibitor", "target": "Macrolide Antimicrobial", "weight": 4, "severity": "CONTRAINDICATED", "shared_drugs": "clarithromycin, efavirenz, etravirine, nevirapine", "width": 2.6094379124341005, "color": "#dc2626"}, {"source": "Human Immunodeficiency Virus 1 Non-Nucleoside Analog Reverse Transcriptase Inhibitor", "target": "Progestin", "weight": 4, "severity": "CONTRAINDICATED", "shared_drugs": "efavirenz, etravirine, nevirapine, norethindrone", "width": 2.6094379124341005, "color": "#dc2626"}, {"source": "Human Immunodeficiency Virus 1 Non-Nucleoside Analog Reverse Transcriptase Inhibitor", "target": "Partial Opioid Agonist", "weight": 4, "severity": "CONTRAINDICATED", "shared_drugs": "buprenorphine, efavirenz, etravirine, nevirapine", "width": 2.6094379124341005, "color": "#dc2626"}, {"source": "Human Immunodeficiency Virus 1 Non-Nucleoside Analog Reverse Transcriptase Inhibitor", "target": "Protease Inhibitor", "weight": 4, "severity": "CONTRAINDICATED", "shared_drugs": "darunavir, efavirenz, etravirine, nevirapine", "width": 2.6094379124341005, "color": "#dc2626"}, {"source": "Azole Antifungal", "target": "Dietary Cholesterol Absorption Inhibitor", "weight": 4, "severity": "CONTRAINDICATED", "shared_drugs": "itraconazole, ketoconazole, posaconazole, voriconazole", "width": 2.6094379124341005, "color": "#dc2626"}, {"source": "Nonsteroidal Anti-Inflammatory Drug", "target": "Prostaglandin E1 Analog", "weight": 4, "severity": "MAJOR", "shared_drugs": "aspirin, diflunisal, ibu, ibuprofen", "width": 2.6094379124341005, "color": "#ea580c"}, {"source": "Azole Antifungal", "target": "Vitamin D2 Analog", "weight": 4, "severity": "MODERATE", "shared_drugs": "itraconazole, ketoconazole, posaconazole, voriconazole", "width": 2.6094379124341005, "color": "#ca8a04"}, {"source": "Anti-Epileptic Agent", "target": "Progestin", "weight": 4, "severity": "MODERATE", "shared_drugs": "felbamate, lamotrigine, oxcarbazepine, phenytoin", "width": 2.6094379124341005, "color": "#ca8a04"}, {"source": "Angiotensin 2 Receptor Blocker", "target": "Potassium Binder", "weight": 4, "severity": "MODERATE", "shared_drugs": "amlodipine, irbesartan, telmisartan, valsartan", "width": 2.6094379124341005, "color": "#ca8a04"}, {"source": "Corticosteroid", "target": "Protease Inhibitor", "weight": 4, "severity": "CONTRAINDICATED", "shared_drugs": "budesonide, dexamethasone, methylprednisolone, prednisone", "width": 2.6094379124341005, "color": "#dc2626"}, {"source": "Benzodiazepine", "target": "Protease Inhibitor", "weight": 4, "severity": "CONTRAINDICATED", "shared_drugs": "clonazepam, diazepam, estazolam, triazolam", "width": 2.6094379124341005, "color": "#dc2626"}, {"source": "Phosphodiesterase 5 Inhibitor", "target": "Protease Inhibitor", "weight": 4, "severity": "CONTRAINDICATED", "shared_drugs": "adcirca, avanafil, sildenafil, tadalafil", "width": 2.6094379124341005, "color": "#dc2626"}, {"source": "Azole Antifungal", "target": "Progestin Antagonist", "weight": 4, "severity": "CONTRAINDICATED", "shared_drugs": "itraconazole, ketoconazole, posaconazole, voriconazole", "width": 2.6094379124341005, "color": "#dc2626"}, {"source": "Azole Antifungal", "target": "Orexin Receptor Antagonist", "weight": 4, "severity": "MAJOR", "shared_drugs": "fluconazole, itraconazole, ketoconazole, posaconazole", "width": 2.6094379124341005, "color": "#ea580c"}, {"source": "Azole Antifungal", "target": "Cytomegalovirus Dna Terminase Complex Inhibitor", "weight": 4, "severity": "CONTRAINDICATED", "shared_drugs": "fluconazole, itraconazole, posaconazole, voriconazole", "width": 2.6094379124341005, "color": "#dc2626"}, {"source": "Barbiturate", "target": "Nonsteroidal Anti-Inflammatory Drug", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "and caffeine, and codeine phosphate, caffeine", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Benzodiazepine", "target": "Nonsteroidal Anti-Inflammatory Drug", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "diazepam, ibu, onfi", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Nonsteroidal Anti-Inflammatory Drug", "target": "Proton Pump Inhibitor", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "esomeprazole, naproxen, omeprazole", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Loop Diuretic", "target": "Nonsteroidal Anti-Inflammatory Drug", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "celecoxib, furosemide, indomethacin", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Amide Local Anesthetic", "target": "Nonsteroidal Anti-Inflammatory Drug", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "bupivacaine, ibu, lidocaine", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Mood Stabilizer", "target": "Nonsteroidal Anti-Inflammatory Drug", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "carbamazepine, ibu, ibuprofen", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Factor Xa Inhibitor", "target": "Nonsteroidal Anti-Inflammatory Drug", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "apixaban, aspirin, rivaroxaban", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Corticosteroid", "target": "Human Immunodeficiency Virus 1 Non-Nucleoside Analog Reverse Transcriptase Inhibitor", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "dexamethasone, efavirenz, nevirapine", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Calcineurin Inhibitor Immunosuppressant", "target": "Corticosteroid", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "cyclosporine, methylprednisolone, prednisone", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Benzodiazepine", "target": "Proton Pump Inhibitor", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "diazepam, omeprazole, onfi", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Benzodiazepine", "target": "Macrolide", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "alprazolam, erythromycin, triazolam", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Benzodiazepine", "target": "Methylxanthine", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "diazepam, lorazepam, theophylline", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Muscle Relaxant", "target": "Thiazide Diuretic", "weight": 3, "severity": "MAJOR", "shared_drugs": "500 mg, soma, usp", "width": 2.386294361119891, "color": "#ea580c"}, {"source": "Atypical Antipsychotic", "target": "Histamine-2 Receptor Antagonist", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "cimetidine, famotidine, ranitidine", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Atypical Antipsychotic", "target": "Cytochrome P450 3A Inhibitor", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "quetiapine, risperidone, ritonavir", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Atypical Antipsychotic", "target": "Central Nervous System Stimulant", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "amphetamine, methylphenidate, risperidone", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Azole Antifungal", "target": "Histamine-2 Receptor Antagonist", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "cimetidine, itraconazole, ketoconazole", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Azole Antifungal", "target": "Retinoid", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "itraconazole, ketoconazole, tretinoin", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Azole Antifungal", "target": "Melatonin Receptor Agonist", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "fluconazole, ketoconazole, ramelteon", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Azole Antifungal", "target": "Cardiac Glycoside", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "digoxin, itraconazole, ketoconazole", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Azole Antifungal", "target": "Macrolide Antimicrobial", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "clarithromycin, fluconazole, itraconazole", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Anthelmintic", "target": "Azole Antifungal", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "itraconazole, ketoconazole, praziquantel", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Azole Antifungal", "target": "Substance P/Neurokinin-1 Receptor Antagonist", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "aprepitant, itraconazole, ketoconazole", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Azole Antifungal", "target": "Progesterone", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "itraconazole, ketoconazole, progesterone", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Azole Antifungal", "target": "Janus Kinase Inhibitor", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "fluconazole, ketoconazole, tofacitinib", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Anti-Epileptic Agent", "target": "Muscle Relaxant", "weight": 3, "severity": "MAJOR", "shared_drugs": "500 mg, soma, usp", "width": 2.386294361119891, "color": "#ea580c"}, {"source": "Anti-Epileptic Agent", "target": "Histamine-2 Receptor Antagonist", "weight": 3, "severity": "MAJOR", "shared_drugs": "cimetidine, phenytoin, ranitidine", "width": 2.386294361119891, "color": "#ea580c"}, {"source": "Anti-Epileptic Agent", "target": "Nucleoside Metabolic Inhibitor", "weight": 3, "severity": "MAJOR", "shared_drugs": "capecitabine, fluorouracil, phenytoin", "width": 2.386294361119891, "color": "#ea580c"}, {"source": "Anti-Epileptic Agent", "target": "Central Nervous System Stimulant", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "acetaminophen, methylphenidate, phenytoin", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Anti-Epileptic Agent", "target": "Factor Xa Inhibitor", "weight": 3, "severity": "MAJOR", "shared_drugs": "apixaban, phenytoin, rivaroxaban", "width": 2.386294361119891, "color": "#ea580c"}, {"source": "Anti-Epileptic Agent", "target": "Human Immunodeficiency Virus Nucleoside Analog Reverse Transcriptase Inhibitor", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "oxcarbazepine, phenytoin, zidovudine", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Anti-Epileptic Agent", "target": "Platinum-Based Drug", "weight": 3, "severity": "MAJOR", "shared_drugs": "carboplatin, cisplatin, phenytoin", "width": 2.386294361119891, "color": "#ea580c"}, {"source": "Anti-Epileptic Agent", "target": "Carbonic Anhydrase Inhibitor", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "acetazolamide, dichlorphenamide, phenytoin", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Anti-Epileptic Agent", "target": "Calcineurin Inhibitor Immunosuppressant", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "cyclosporine, oxcarbazepine, phenytoin", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Anti-Epileptic Agent", "target": "Penem Antibacterial", "weight": 3, "severity": "MAJOR", "shared_drugs": "meropenem, valproic, valproic acid", "width": 2.386294361119891, "color": "#ea580c"}, {"source": "Muscle Relaxant", "target": "Opioid Agonist", "weight": 3, "severity": "MAJOR", "shared_drugs": "fentanyl, metaxalone, usp", "width": 2.386294361119891, "color": "#ea580c"}, {"source": "Peroxisome Proliferator Receptor Alpha Agonist", "target": "Sulfonylurea", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "gemfibrozil, glyburide, pioglitazone", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Fluoroquinolone Antibacterial", "target": "Sulfonylurea", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "ciprofloxacin, glimepiride, glyburide", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Rifamycin Antibacterial", "target": "Sulfonylurea", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "glipizide, glyburide, rifampin", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Folate Analog Metabolic Inhibitor", "target": "Proton Pump Inhibitor", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "esomeprazole, methotrexate, omeprazole", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Dietary Cholesterol Absorption Inhibitor", "target": "Hmg-Coa Reductase Inhibitor", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "ezetimibe, ezetimibe and simvastatin, simvastatin", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Alkaloid", "target": "Hmg-Coa Reductase Inhibitor", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "colchicine, lovastatin, simvastatin", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Hmg-Coa Reductase Inhibitor", "target": "Macrolide Antimicrobial", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "clarithromycin, lovastatin, simvastatin", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Anti-Anginal", "target": "Hmg-Coa Reductase Inhibitor", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "lovastatin, ranolazine, simvastatin", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Hmg-Coa Reductase Inhibitor", "target": "Macrolide", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "erythromycin, lovastatin, simvastatin", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Hmg-Coa Reductase Inhibitor", "target": "Pyrimidine Synthesis Inhibitor", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "rosuvastatin, simvastatin, teriflunomide", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Dihydropyridine Calcium Channel Blocker", "target": "Histamine-2 Receptor Antagonist", "weight": 3, "severity": "MAJOR", "shared_drugs": "cimetidine, nifedipine, ranitidine", "width": 2.386294361119891, "color": "#ea580c"}, {"source": "Calcineurin Inhibitor Immunosuppressant", "target": "Histamine-2 Receptor Antagonist", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "cimetidine, cyclosporine, ranitidine", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Muscle Relaxant", "target": "Nitroimidazole Antimicrobial", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "500 mg, soma, usp", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Glinide", "target": "Peroxisome Proliferator Receptor Alpha Agonist", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "gemfibrozil, lopid, repaglinide", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Peroxisome Proliferator Receptor Alpha Agonist", "target": "Prostacyclin Receptor Agonist", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "gemfibrozil, lopid, selexipag", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Nonsteroidal Anti-Inflammatory Drug", "target": "Xanthine Oxidase Inhibitor", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "ibu, indomethacin, naproxen", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Nucleoside Metabolic Inhibitor", "target": "Xanthine Oxidase Inhibitor", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "allopurinol, capecitabine, fluorouracil", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Beta-Adrenergic Blocker", "target": "Nonsteroidal Anti-Inflammatory Drug", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "aspirin, ibu, indomethacin", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Cytochrome P450 3A Inhibitor", "target": "Estrogen", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "conjugated, estradiol, ritonavir", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Estrogen", "target": "Substance P/Neurokinin-1 Receptor Antagonist", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "aprepitant, estradiol, levonorgestrel and ethinyl estradiol", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Estrogen", "target": "Rifamycin Antimycobacterial", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "conjugated, estradiol, rifabutin", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Estrogen", "target": "Protease Inhibitor", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "darunavir, estradiol, estrogens", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Histamine-2 Receptor Antagonist", "target": "Phosphodiesterase 5 Inhibitor", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "cimetidine, nizatidine, ranitidine", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Macrolide Antimicrobial", "target": "Phosphodiesterase 5 Inhibitor", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "clarithromycin, sildenafil, tadalafil", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Dihydropyridine Calcium Channel Blocker", "target": "Human Immunodeficiency Virus 1 Non-Nucleoside Analog Reverse Transcriptase Inhibitor", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "etravirine, felodipine, nifedipine", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Cytochrome P450 3A Inhibitor", "target": "Dihydropyridine Calcium Channel Blocker", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "felodipine, nifedipine, ritonavir", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Calcineurin Inhibitor Immunosuppressant", "target": "Dihydropyridine Calcium Channel Blocker", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "cyclosporine, nifedipine, tacrolimus", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Alpha-Glucosidase Inhibitor", "target": "Dihydropyridine Calcium Channel Blocker", "weight": 3, "severity": "MAJOR", "shared_drugs": "acarbose, miglitol, nifedipine", "width": 2.386294361119891, "color": "#ea580c"}, {"source": "Hmg-Coa Reductase Inhibitor", "target": "Kinase Inhibitor", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "lovastatin, rosuvastatin, simvastatin", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Human Immunodeficiency Virus 1 Non-Nucleoside Analog Reverse Transcriptase Inhibitor", "target": "Kinase Inhibitor", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "efavirenz, etravirine, nevirapine", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Calcineurin Inhibitor Immunosuppressant", "target": "Kinase Inhibitor", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "cyclosporine, neoral, tacrolimus", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Kinase Inhibitor", "target": "Rifamycin Antimycobacterial", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "erlotinib, nilotinib, rifabutin", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Factor Xa Inhibitor", "target": "Mood Stabilizer", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "apixaban, carbamazepine, rivaroxaban", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Calcineurin Inhibitor Immunosuppressant", "target": "Mood Stabilizer", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "carbamazepine, cyclosporine, tacrolimus", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Androgen", "target": "Calcineurin Inhibitor Immunosuppressant", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "1%, danazol, tacrolimus", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Cytochrome P450 3A Inhibitor", "target": "Factor Xa Inhibitor", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "apixaban, ritonavir, rivaroxaban", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Aromatic Amino Acid Decarboxylation Inhibitor", "target": "Catechol-O-Methyltransferase Inhibitor", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "carbidopa, entacapone, levodopa", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Human Immunodeficiency Virus Nucleoside Analog Reverse Transcriptase Inhibitor", "target": "Rifamycin Antibacterial", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "retrovir, rifampin, zidovudine", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Human Immunodeficiency Virus Nucleoside Analog Reverse Transcriptase Inhibitor", "target": "Nucleoside Analog Antiviral", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "retrovir, ribavirin, zidovudine", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Hmg-Coa Reductase Inhibitor", "target": "Human Immunodeficiency Virus 1 Non-Nucleoside Analog Reverse Transcriptase Inhibitor", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "lovastatin, rosuvastatin, simvastatin", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Human Immunodeficiency Virus 1 Non-Nucleoside Analog Reverse Transcriptase Inhibitor", "target": "Rifamycin Antimycobacterial", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "efavirenz, etravirine, rifabutin", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Cytochrome P450 3A Inhibitor", "target": "Hepatitis B Virus Nucleoside Analog Reverse Transcriptase Inhibitor", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "abacavir, lamivudine, ritonavir", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Hepatitis B Virus Nucleoside Analog Reverse Transcriptase Inhibitor", "target": "Protease Inhibitor", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "abacavir, darunavir, lamivudine", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Alpha-Glucosidase Inhibitor", "target": "Cardiac Glycoside", "weight": 3, "severity": "MAJOR", "shared_drugs": "acarbose, digoxin, miglitol", "width": 2.386294361119891, "color": "#ea580c"}, {"source": "Glinide", "target": "Macrolide Antimicrobial", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "clarithromycin, nateglinide, repaglinide", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Calcineurin Inhibitor Immunosuppressant", "target": "Macrolide Antimicrobial", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "clarithromycin, cyclosporine, tacrolimus", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Alkylating Drug", "target": "Substance P/Neurokinin-1 Receptor Antagonist", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "aprepitant, cyclophosphamide, ifosfamide", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Anti-Epileptic Agent", "target": "Vitamin C", "weight": 3, "severity": "MODERATE", "shared_drugs": "phenytoin, valproic, valproic acid", "width": 2.386294361119891, "color": "#ca8a04"}, {"source": "Hmg-Coa Reductase Inhibitor", "target": "P2Y12 Platelet Inhibitor", "weight": 3, "severity": "MODERATE", "shared_drugs": "lovastatin, rosuvastatin, simvastatin", "width": 2.386294361119891, "color": "#ca8a04"}, {"source": "Cytochrome P450 3A Inhibitor", "target": "P2Y12 Platelet Inhibitor", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "clopidogrel, ritonavir, ticagrelor", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "P2Y12 Platelet Inhibitor", "target": "Rifamycin Antibacterial", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "clopidogrel, rifampin, ticagrelor", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Retinoid", "target": "Tetracycline-Class Drug", "weight": 3, "severity": "UNKNOWN", "shared_drugs": "acitretin, isotretinoin, tretinoin", "width": 2.386294361119891, "color": "#64748b"}, {"source": "Azole Antifungal", "target": "Endothelin Receptor Antagonist", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "fluconazole, itraconazole, ketoconazole", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Antimycobacterial", "target": "Rifamycin Antibacterial", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "isoniazid, pyrazinamide, rifampin", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Calcineurin Inhibitor Immunosuppressant", "target": "Macrolide", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "cyclosporine, erythromycin, tacrolimus", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Cytochrome P450 3A Inhibitor", "target": "Muscle Relaxant", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "500 mg, soma, usp", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Central Nervous System Stimulant", "target": "Cytochrome P450 3A Inhibitor", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "acetaminophen, amphetamine, ritonavir", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Calcineurin Inhibitor Immunosuppressant", "target": "Cytochrome P450 3A Inhibitor", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "cyclosporine, ritonavir, tacrolimus", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Cytochrome P450 3A Inhibitor", "target": "Hepatitis C Virus Ns5A Inhibitor", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "epclusa, harvoni, ritonavir", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Corticosteroid", "target": "Methylxanthine", "weight": 3, "severity": "MODERATE", "shared_drugs": "hydrocortisone, methylprednisolone, prednisone", "width": 2.386294361119891, "color": "#ca8a04"}, {"source": "Methylxanthine", "target": "Muscle Relaxant", "weight": 3, "severity": "MODERATE", "shared_drugs": "500 mg, soma, usp", "width": 2.386294361119891, "color": "#ca8a04"}, {"source": "Dihydropyridine Calcium Channel Blocker", "target": "Methylxanthine", "weight": 3, "severity": "MODERATE", "shared_drugs": "felodipine, isradipine, nifedipine", "width": 2.386294361119891, "color": "#ca8a04"}, {"source": "Calcineurin Inhibitor Immunosuppressant", "target": "Rifamycin Antibacterial", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "cyclosporine, rifampin, tacrolimus", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Calcineurin Inhibitor Immunosuppressant", "target": "Rifamycin Antimycobacterial", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "cyclosporine, rifabutin, tacrolimus", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Angiotensin Converting Enzyme Inhibitor", "target": "Potassium Binder", "weight": 3, "severity": "MODERATE", "shared_drugs": "captopril, ramipril, trandolapril", "width": 2.386294361119891, "color": "#ca8a04"}, {"source": "Central Nervous System Stimulant", "target": "Muscle Relaxant", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "metaxalone, soma, usp", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Antiarrhythmic", "target": "Estrogen", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "conjugated, conjugated estrogens, estrogens", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Azole Antifungal", "target": "Cannabinoid", "weight": 3, "severity": "MODERATE", "shared_drugs": "fluconazole, itraconazole, ketoconazole", "width": 2.386294361119891, "color": "#ca8a04"}, {"source": "Anti-Epileptic Agent", "target": "Protease Inhibitor", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "phenytoin, valproic, valproic acid", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Protease Inhibitor", "target": "Sulfonylurea", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "glimepiride, glipizide, glyburide", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Dihydropyridine Calcium Channel Blocker", "target": "Protease Inhibitor", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "felodipine, nifedipine, nisoldipine", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Azole Antifungal", "target": "Echinocandin Antifungal", "weight": 3, "severity": "UNKNOWN", "shared_drugs": "fluconazole, itraconazole, voriconazole", "width": 2.386294361119891, "color": "#64748b"}, {"source": "Corticosteroid", "target": "Cystic Fibrosis Transmembrane Conductance Regulator Potentiator", "weight": 3, "severity": "MAJOR", "shared_drugs": "budesonide, methylprednisolone, prednisone", "width": 2.386294361119891, "color": "#ea580c"}, {"source": "Cystic Fibrosis Transmembrane Conductance Regulator Potentiator", "target": "Proton Pump Inhibitor", "weight": 3, "severity": "MAJOR", "shared_drugs": "esomeprazole, lansoprazole, omeprazole", "width": 2.386294361119891, "color": "#ea580c"}, {"source": "Hepatitis C Virus Ns5A Inhibitor", "target": "Hmg-Coa Reductase Inhibitor", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "lovastatin, rosuvastatin, simvastatin", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Hepatitis C Virus Nucleotide Analog Ns5B Polymerase Inhibitor", "target": "Hmg-Coa Reductase Inhibitor", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "lovastatin, rosuvastatin, simvastatin", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Human Immunodeficiency Virus 1 Non-Nucleoside Analog Reverse Transcriptase Inhibitor", "target": "Opioid Antagonist", "weight": 3, "severity": "MAJOR", "shared_drugs": "efavirenz, etravirine, nevirapine", "width": 2.386294361119891, "color": "#ea580c"}, {"source": "Azole Antifungal", "target": "Calcitonin Gene-Related Peptide Receptor Antagonist", "weight": 3, "severity": "MODERATE", "shared_drugs": "fluconazole, itraconazole, ketoconazole", "width": 2.386294361119891, "color": "#ca8a04"}, {"source": "Human Immunodeficiency Virus Nucleoside Analog Reverse Transcriptase Inhibitor", "target": "Intestinal Lipase Inhibitor", "weight": 3, "severity": "MODERATE", "shared_drugs": "emtricitabine, retrovir, tenofovir disoproxil fumarate", "width": 2.386294361119891, "color": "#ca8a04"}, {"source": "Anti-Epileptic Agent", "target": "Neuroactive Steroid Gamma-Aminobutyric Acid A Receptor Positive Modulator", "weight": 3, "severity": "MODERATE", "shared_drugs": "phenytoin, valproic, valproic acid", "width": 2.386294361119891, "color": "#ca8a04"}, {"source": "Hepatitis C Virus Ns3/4A Protease Inhibitor", "target": "Hmg-Coa Reductase Inhibitor", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "lovastatin, rosuvastatin, simvastatin", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Hepatitis C Virus Ns3/4A Protease Inhibitor", "target": "Human Immunodeficiency Virus Nucleoside Analog Reverse Transcriptase Inhibitor", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "emtricitabine, rilpivirine, tenofovir disoproxil fumarate", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Cytomegalovirus Dna Terminase Complex Inhibitor", "target": "Hmg-Coa Reductase Inhibitor", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "lovastatin, rosuvastatin, simvastatin", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Cytomegalovirus Dna Terminase Complex Inhibitor", "target": "Human Immunodeficiency Virus 1 Non-Nucleoside Analog Reverse Transcriptase Inhibitor", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "efavirenz, etravirine, nevirapine", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Atypical Antipsychotic", "target": "Serotonin Reuptake Inhibitor", "weight": 3, "severity": "CONTRAINDICATED", "shared_drugs": "clozapine, iloperidone, olanzapine", "width": 2.386294361119891, "color": "#dc2626"}, {"source": "Nitrate Vasodilator", "target": "Nonsteroidal Anti-Inflammatory Drug", "weight": 2, "severity": "CONTRAINDICATED", "shared_drugs": "aspirin, nitroglycerin", "width": 2.09861228866811, "color": "#dc2626"}, {"source": "Human Immunodeficiency Virus Nucleoside Analog Reverse Transcriptase Inhibitor", "target": "Nonsteroidal Anti-Inflammatory Drug", "weight": 2, "severity": "CONTRAINDICATED", "shared_drugs": "retrovir, rilpivirine", "width": 2.09861228866811, "color": "#dc2626"}, {"source": "Alkylating Drug", "target": "Nonsteroidal Anti-Inflammatory Drug", "weight": 2, "severity": "CONTRAINDICATED", "shared_drugs": "cyclophosphamide, ifosfamide", "width": 2.09861228866811, "color": "#dc2626"}, {"source": "Carbonic Anhydrase Inhibitor", "target": "Nonsteroidal Anti-Inflammatory Drug", "weight": 2, "severity": "CONTRAINDICATED", "shared_drugs": "acetazolamide, aspirin", "width": 2.09861228866811, "color": "#dc2626"}, {"source": "Nonsteroidal Anti-Inflammatory Drug", "target": "Potassium Binder", "weight": 2, "severity": "CONTRAINDICATED", "shared_drugs": "ibu, sodium polystyrene sulfonate", "width": 2.09861228866811, "color": "#dc2626"}, {"source": "Nonsteroidal Anti-Inflammatory Drug", "target": "Platelet Aggregation Inhibitor", "weight": 2, "severity": "CONTRAINDICATED", "shared_drugs": "aspirin, dipyridamole", "width": 2.09861228866811, "color": "#dc2626"}, {"source": "Nonsteroidal Anti-Inflammatory Drug", "target": "Potassium-Sparing Diuretic", "weight": 2, "severity": "CONTRAINDICATED", "shared_drugs": "indomethacin, triamterene", "width": 2.09861228866811, "color": "#dc2626"}, {"source": "Benzodiazepine", "target": "Corticosteroid", "weight": 2, "severity": "CONTRAINDICATED", "shared_drugs": "dexamethasone, onfi", "width": 2.09861228866811, "color": "#dc2626"}, {"source": "Anti-Epileptic Agent", "target": "Corticosteroid", "weight": 2, "severity": "MAJOR", "shared_drugs": "oxcarbazepine, phenytoin", "width": 2.09861228866811, "color": "#ea580c"}, {"source": "Corticosteroid", "target": "Muscle Relaxant", "weight": 2, "severity": "MAJOR", "shared_drugs": "soma, usp", "width": 2.09861228866811, "color": "#ea580c"}, {"source": "Corticosteroid", "target": "Estrogen", "weight": 2, "severity": "CONTRAINDICATED", "shared_drugs": "dexamethasone, estrogens", "width": 2.09861228866811, "color": "#dc2626"}, {"source": "Corticosteroid", "target": "Fluoroquinolone Antibacterial", "weight": 2, "severity": "MAJOR", "shared_drugs": "ciprofloxacin, levofloxacin", "width": 2.09861228866811, "color": "#ea580c"}, {"source": "Corticosteroid", "target": "Mood Stabilizer", "weight": 2, "severity": "CONTRAINDICATED", "shared_drugs": "carbamazepine, dexamethasone", "width": 2.09861228866811, "color": "#dc2626"}, {"source": "Corticosteroid", "target": "Human Immunodeficiency Virus Nucleoside Analog Reverse Transcriptase Inhibitor", "weight": 2, "severity": "CONTRAINDICATED", "shared_drugs": "dexamethasone, retrovir", "width": 2.09861228866811, "color": "#dc2626"}, {"source": "Corticosteroid", "target": "Macrolide Antimicrobial", "weight": 2, "severity": "CONTRAINDICATED", "shared_drugs": "clarithromycin, methylprednisolone", "width": 2.09861228866811, "color": "#dc2626"}, {"source": "Corticosteroid", "target": "Macrolide", "weight": 2, "severity": "CONTRAINDICATED", "shared_drugs": "erythromycin, methylprednisolone", "width": 2.09861228866811, "color": "#dc2626"}, {"source": "Corticosteroid", "target": "Rifamycin Antimycobacterial", "weight": 2, "severity": "CONTRAINDICATED", "shared_drugs": "prednisone, rifabutin", "width": 2.09861228866811, "color": "#dc2626"}, {"source": "Benzodiazepine", "target": "Muscle Relaxant", "weight": 2, "severity": "CONTRAINDICATED", "shared_drugs": "500 mg, usp", "width": 2.09861228866811, "color": "#dc2626"}, {"source": "Benzodiazepine", "target": "Nitroimidazole Antimicrobial", "weight": 2, "severity": "CONTRAINDICATED", "shared_drugs": "diazepam, metronidazole", "width": 2.09861228866811, "color": "#dc2626"}, {"source": "Benzodiazepine", "target": "Estrogen", "weight": 2, "severity": "CONTRAINDICATED", "shared_drugs": "estradiol, temazepam", "width": 2.09861228866811, "color": "#dc2626"}, {"source": "Benzodiazepine", "target": "Cardiac Glycoside", "weight": 2, "severity": "CONTRAINDICATED", "shared_drugs": "alprazolam, digoxin", "width": 2.09861228866811, "color": "#dc2626"}, {"source": "Benzodiazepine", "target": "Microtubule Inhibitor", "weight": 2, "severity": "CONTRAINDICATED", "shared_drugs": "paclitaxel, triazolam", "width": 2.09861228866811, "color": "#dc2626"}, {"source": "Benzodiazepine", "target": "Rifamycin Antibacterial", "weight": 2, "severity": "CONTRAINDICATED", "shared_drugs": "diazepam, rifampin", "width": 2.09861228866811, "color": "#dc2626"}, {"source": "Potassium-Sparing Diuretic", "target": "Thiazide Diuretic", "weight": 2, "severity": "MAJOR", "shared_drugs": "triamterene, triamterene and hydrochlorothiazide", "width": 2.09861228866811, "color": "#ea580c"}, {"source": "Azole Antifungal", "target": "Thiazide Diuretic", "weight": 2, "severity": "MAJOR", "shared_drugs": "fluconazole, ketoconazole", "width": 2.09861228866811, "color": "#ea580c"}, {"source": "Aldosterone Antagonist", "target": "Thiazide Diuretic", "weight": 2, "severity": "MAJOR", "shared_drugs": "eplerenone, spironolactone", "width": 2.09861228866811, "color": "#ea580c"}, {"source": "Alpha-Adrenergic Agonist", "target": "Thiazide Diuretic", "weight": 2, "severity": "MAJOR", "shared_drugs": "adrenalin, epinephrine", "width": 2.09861228866811, "color": "#ea580c"}, {"source": "Calcineurin Inhibitor Immunosuppressant", "target": "Thiazide Diuretic", "weight": 2, "severity": "MAJOR", "shared_drugs": "cyclosporine, tacrolimus", "width": 2.09861228866811, "color": "#ea580c"}, {"source": "Atypical Antipsychotic", "target": "Nonsteroidal Anti-Inflammatory Drug", "weight": 2, "severity": "CONTRAINDICATED", "shared_drugs": "aspirin, ibu", "width": 2.09861228866811, "color": "#dc2626"}, {"source": "Atypical Antipsychotic", "target": "Barbiturate", "weight": 2, "severity": "CONTRAINDICATED", "shared_drugs": "and caffeine, caffeine", "width": 2.09861228866811, "color": "#dc2626"}, {"source": "Atypical Antipsychotic", "target": "Muscle Relaxant", "weight": 2, "severity": "CONTRAINDICATED", "shared_drugs": "500 mg, usp", "width": 2.09861228866811, "color": "#dc2626"}, {"source": "Atypical Antipsychotic", "target": "Hmg-Coa Reductase Inhibitor", "weight": 2, "severity": "CONTRAINDICATED", "shared_drugs": "lovastatin, rosuvastatin", "width": 2.09861228866811, "color": "#dc2626"}, {"source": "Atypical Antipsychotic", "target": "Estrogen", "weight": 2, "severity": "CONTRAINDICATED", "shared_drugs": "conjugated, estradiol", "width": 2.09861228866811, "color": "#dc2626"}, {"source": "Atypical Antipsychotic", "target": "Fluoroquinolone Antibacterial", "weight": 2, "severity": "CONTRAINDICATED", "shared_drugs": "ciprofloxacin, clozapine", "width": 2.09861228866811, "color": "#dc2626"}, {"source": "Aromatic Amino Acid Decarboxylation Inhibitor", "target": "Atypical Antipsychotic", "weight": 2, "severity": "CONTRAINDICATED", "shared_drugs": "levodopa, risperidone", "width": 2.09861228866811, "color": "#dc2626"}, {"source": "Atypical Antipsychotic", "target": "Macrolide Antimicrobial", "weight": 2, "severity": "CONTRAINDICATED", "shared_drugs": "clarithromycin, quetiapine", "width": 2.09861228866811, "color": "#dc2626"}, {"source": "Azole Antifungal", "target": "Muscle Relaxant", "weight": 2, "severity": "CONTRAINDICATED", "shared_drugs": "500 mg, usp", "width": 2.09861228866811, "color": "#dc2626"}, {"source": "Aldosterone Antagonist", "target": "Azole Antifungal", "weight": 2, "severity": "CONTRAINDICATED", "shared_drugs": "eplerenone, fluconazole", "width": 2.09861228866811, "color": "#dc2626"}, {"source": "5-Alpha Reductase Inhibitor", "target": "Azole Antifungal", "weight": 2, "severity": "CONTRAINDICATED", "shared_drugs": "dutasteride, ketoconazole", "width": 2.09861228866811, "color": "#dc2626"}, {"source": "Azole Antifungal", "target": "Barbiturate", "weight": 2, "severity": "CONTRAINDICATED", "shared_drugs": "caffeine, ketoconazole", "width": 2.09861228866811, "color": "#dc2626"}, {"source": "Antimycobacterial", "target": "Azole Antifungal", "weight": 2, "severity": "CONTRAINDICATED", "shared_drugs": "isoniazid, ketoconazole", "width": 2.09861228866811, "color": "#dc2626"}, {"source": "Azole Antifungal", "target": "Methylxanthine", "weight": 2, "severity": "CONTRAINDICATED", "shared_drugs": "ketoconazole, theophylline", "width": 2.09861228866811, "color": "#dc2626"}, {"source": "Azole Antifungal", "target": "Phosphodiesterase 3 Inhibitor", "weight": 2, "severity": "CONTRAINDICATED", "shared_drugs": "cilostazol, ketoconazole", "width": 2.09861228866811, "color": "#dc2626"}, {"source": "Azole Antifungal", "target": "Partial Opioid Agonist", "weight": 2, "severity": "CONTRAINDICATED", "shared_drugs": "buprenorphine, ketoconazole", "width": 2.09861228866811, "color": "#dc2626"}, {"source": "Azole Antifungal", "target": "Vasopressin V2 Receptor Antagonist", "weight": 2, "severity": "CONTRAINDICATED", "shared_drugs": "ketoconazole, tolvaptan", "width": 2.09861228866811, "color": "#dc2626"}, {"source": "Azole Antifungal", "target": "Opioid Agonist", "weight": 2, "severity": "CONTRAINDICATED", "shared_drugs": "fentanyl, ketoconazole", "width": 2.09861228866811, "color": "#dc2626"}, {"source": "Anti-Epileptic Agent", "target": "Proton Pump Inhibitor", "weight": 2, "severity": "CONTRAINDICATED", "shared_drugs": "omeprazole, phenytoin", "width": 2.09861228866811, "color": "#dc2626"}, {"source": "Anti-Epileptic Agent", "target": "Loop Diuretic", "weight": 2, "severity": "MAJOR", "shared_drugs": "furosemide, phenytoin", "width": 2.09861228866811, "color": "#ea580c"}, {"source": "Aluminum Complex", "target": "Anti-Epileptic Agent", "weight": 2, "severity": "MAJOR", "shared_drugs": "phenytoin, sucralfate", "width": 2.09861228866811, "color": "#ea580c"}, {"source": "Anti-Epileptic Agent", "target": "Cardiac Glycoside", "weight": 2, "severity": "MAJOR", "shared_drugs": "digoxin, phenytoin", "width": 2.09861228866811, "color": "#ea580c"}, {"source": "Anti-Epileptic Agent", "target": "P2Y12 Platelet Inhibitor", "weight": 2, "severity": "MAJOR", "shared_drugs": "phenytoin, ticagrelor", "width": 2.09861228866811, "color": "#ea580c"}, {"source": "Anti-Epileptic Agent", "target": "Tetracycline-Class Drug", "weight": 2, "severity": "MAJOR", "shared_drugs": "doxycycline, phenytoin", "width": 2.09861228866811, "color": "#ea580c"}, {"source": "Anti-Epileptic Agent", "target": "Antimycobacterial", "weight": 2, "severity": "MAJOR", "shared_drugs": "isoniazid, phenytoin", "width": 2.09861228866811, "color": "#ea580c"}, {"source": "Anti-Epileptic Agent", "target": "Macrolide", "weight": 2, "severity": "CONTRAINDICATED", "shared_drugs": "erythromycin, phenytoin", "width": 2.09861228866811, "color": "#dc2626"}, {"source": "Anti-Epileptic Agent", "target": "Methylxanthine", "weight": 2, "severity": "MAJOR", "shared_drugs": "phenytoin, theophylline", "width": 2.09861228866811, "color": "#ea580c"}, {"source": "Anti-Epileptic Agent", "target": "Folate Analog Metabolic Inhibitor", "weight": 2, "severity": "MAJOR", "shared_drugs": "methotrexate, phenytoin", "width": 2.09861228866811, "color": "#ea580c"}, {"source": "Anthelmintic", "target": "Anti-Epileptic Agent", "weight": 2, "severity": "MAJOR", "shared_drugs": "albendazole, praziquantel", "width": 2.09861228866811, "color": "#ea580c"}, {"source": "Anti-Epileptic Agent", "target": "Dihydrofolate Reductase Inhibitor Antibacterial", "weight": 2, "severity": "CONTRAINDICATED", "shared_drugs": "phenytoin, trimethoprim", "width": 2.09861228866811, "color": "#dc2626"}, {"source": "Anti-Epileptic Agent", "target": "Antiarrhythmic", "weight": 2, "severity": "CONTRAINDICATED", "shared_drugs": "dofetilide, phenytoin", "width": 2.09861228866811, "color": "#dc2626"}, {"source": "Anti-Epileptic Agent", "target": "Rifamycin Antibacterial", "weight": 2, "severity": "CONTRAINDICATED", "shared_drugs": "phenytoin, rifampin", "width": 2.09861228866811, "color": "#dc2626"}, {"source": "Aldehyde Dehydrogenase Inhibitor", "target": "Anti-Epileptic Agent", "weight": 2, "severity": "MAJOR", "shared_drugs": "disulfiram, phenytoin", "width": 2.09861228866811, "color": "#ea580c"}, {"source": "General Anesthetic", "target": "Muscle Relaxant", "weight": 2, "severity": "MAJOR", "shared_drugs": "ultane, usp", "width": 2.09861228866811, "color": "#ea580c"}, {"source": "Muscle Relaxant", "target": "Rifamycin Antibacterial", "weight": 2, "severity": "CONTRAINDICATED", "shared_drugs": "500 mg, rifampin", "width": 2.09861228866811, "color": "#dc2626"}, {"source": "Atypical Antipsychotic", "target": "Sulfonylurea", "weight": 2, "severity": "CONTRAINDICATED", "shared_drugs": "clozapine, olanzapine", "width": 2.09861228866811, "color": "#dc2626"}]};
+    const svg = document.querySelector("svg");
+    const tip = document.querySelector(".tip");
+    const limitSelect = document.querySelector("#limit");
+
+    // pan/zoom state
+    const viewport = document.getElementById('viewport');
+      let scale = 1;
+    let tx = 0, ty = 0;
+    let isPanning = false, panStart = null;
+
+    function setTransform() {
+      viewport.setAttribute('transform', `translate(${tx},${ty}) scale(${scale})`);
+    }
+
+    function render(limit) {
+      // clear viewport contents
+      while (viewport.firstChild) viewport.removeChild(viewport.firstChild);
+      const edges = graph.edges.slice(0, limit);
+      const visible = new Set();
+      for (const edge of edges) {
+        visible.add(edge.source);
+        visible.add(edge.target);
+      }
+      const nodes = graph.nodes.filter(node => visible.has(node.id));
+      const byId = new Map(nodes.map(n => [n.id, n]));
+      for (const e of edges) {
+      const a = byId.get(e.source);
+      const b = byId.get(e.target);
+      if (!a || !b) continue;
+      const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      line.setAttribute("x1", a.x);
+      line.setAttribute("y1", a.y);
+      line.setAttribute("x2", b.x);
+      line.setAttribute("y2", b.y);
+      line.setAttribute("stroke", e.color);
+      line.setAttribute("stroke-width", e.width);
+      line.classList.add("edge");
+      line.setAttribute('data-severity', e.severity);
+      line.addEventListener("mousemove", event => showTip(event, `<b>${escapeHtml(e.source)} ↔ ${escapeHtml(e.target)}</b><br>Severity: ${e.severity}<br>Weight: ${e.weight}<br>Shared drugs: ${escapeHtml(e.shared_drugs || "n/a")}`));
+      line.addEventListener("mouseleave", hideTip);
+      line.dataset.source = e.source;
+      line.dataset.target = e.target;
+      viewport.appendChild(line);
+    }
+
+      for (const n of nodes) {
+      const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      circle.setAttribute("cx", n.x);
+      circle.setAttribute("cy", n.y);
+      circle.setAttribute("r", n.size);
+      circle.setAttribute("fill", n.color);
+      circle.classList.add("node");
+      circle.setAttribute('data-severity', n.severity);
+      circle.addEventListener("mousemove", event => showTip(event, `<b>${escapeHtml(n.id)}</b><br>Drugs: ${n.drug_count}<br>Severity: ${n.severity}`));
+      circle.addEventListener("mouseleave", hideTip);
+      circle.addEventListener("mouseenter", () => highlight(n.id));
+      circle.addEventListener("mouseleave", () => clearHighlight());
+      circle.dataset.id = n.id;
+      viewport.appendChild(circle);
+
+      const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      label.setAttribute("x", n.x);
+      label.setAttribute("y", n.y + n.size + 13);
+      label.classList.add("label");
+      label.dataset.id = n.id;
+      label.textContent = n.id.length > 22 ? n.id.slice(0, 20) + "..." : n.id;
+      viewport.appendChild(label);
+    }
+    }
+
+    limitSelect.addEventListener("change", () => render(Number(limitSelect.value)));
+    render(Number(limitSelect.value));
+
+    // pan/zoom handlers
+    const svgNode = document.querySelector('svg');
+    svgNode.addEventListener('wheel', e => {
+      e.preventDefault();
+      const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1;
+      const oldScale = scale;
+      scale = Math.max(0.2, Math.min(6, scale * zoomFactor));
+      // optional: adjust tx/ty to zoom toward mouse position (approximate)
+      const rect = svgNode.getBoundingClientRect();
+      const mx = e.clientX - rect.left;
+      const my = e.clientY - rect.top;
+      tx = mx - (mx - tx) * (scale / oldScale);
+      ty = my - (my - ty) * (scale / oldScale);
+      setTransform();
+    });
+
+    svgNode.addEventListener('mousedown', e => { isPanning = true; panStart = {x: e.clientX, y: e.clientY}; });
+    window.addEventListener('mousemove', e => {
+      if (!isPanning) return;
+      const dx = e.clientX - panStart.x; const dy = e.clientY - panStart.y;
+      panStart = {x: e.clientX, y: e.clientY};
+      tx += dx; ty += dy; setTransform();
+    });
+    window.addEventListener('mouseup', () => { isPanning = false; panStart = null; });
+
+    document.getElementById('btnZoomIn').addEventListener('click', () => { scale = Math.min(6, scale * 1.2); setTransform(); });
+    document.getElementById('btnZoomOut').addEventListener('click', () => { scale = Math.max(0.2, scale / 1.2); setTransform(); });
+    document.getElementById('btnReset').addEventListener('click', () => { scale = 1; tx = 0; ty = 0; setTransform(); });
+
+    // export PNG
+    document.getElementById('btnExport').addEventListener('click', async () => {
+      const clone = svgNode.cloneNode(true);
+      // apply current transform onto the cloned viewport group
+      const gv = clone.querySelector('#viewport');
+      if (gv) gv.setAttribute('transform', `translate(${tx},${ty}) scale(${scale})`);
+      const svgData = new XMLSerializer().serializeToString(clone);
+      const img = new Image();
+      const blob = new Blob([svgData], {type: 'image/svg+xml;charset=utf-8'});
+      const url = URL.createObjectURL(blob);
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = clone.viewBox.baseVal.width || 1000;
+        canvas.height = clone.viewBox.baseVal.height || 820;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#ffffff'; ctx.fillRect(0,0,canvas.width,canvas.height);
+        ctx.drawImage(img,0,0);
+        URL.revokeObjectURL(url);
+        const png = canvas.toDataURL('image/png');
+        const a = document.createElement('a'); a.href = png; a.download = 'interactions_graph.png'; a.click();
+      };
+      img.src = url;
+    });
+
+    // search
+    const search = document.getElementById('search');
+    search.addEventListener('keyup', (e) => {
+      const q = e.target.value.trim().toLowerCase();
+      if (!q) return;
+      const node = graph.nodes.find(n => n.id.toLowerCase().includes(q));
+      if (node) centerOn(node);
+    });
+
+    function centerOn(node) {
+      // center node roughly in viewport
+      const rect = svgNode.getBoundingClientRect();
+      const cx = rect.width / 2; const cy = rect.height / 2;
+      tx = cx - node.x * scale; ty = cy - node.y * scale; setTransform();
+      highlight(node.id);
+    }
+
+    // severity filters
+    document.querySelectorAll('.sev-filter').forEach(cb => cb.addEventListener('change', () => {
+      const enabled = Array.from(document.querySelectorAll('.sev-filter')).filter(x => x.checked).map(x => x.dataset.sev);
+      for (const el of svgNode.querySelectorAll('.node')) {
+        el.style.display = enabled.includes(el.getAttribute('data-severity')) ? '' : 'none';
+      }
+      for (const el of svgNode.querySelectorAll('.edge')) {
+        el.style.display = enabled.includes(el.getAttribute('data-severity')) ? '' : 'none';
+      }
+    }));
+
+    function highlight(id) {
+      const linked = new Set([id]);
+      for (const edge of svg.querySelectorAll(".edge")) {
+        const active = edge.dataset.source === id || edge.dataset.target === id;
+        edge.classList.toggle("active", active);
+        edge.classList.toggle("dim", !active);
+        if (active) {
+          linked.add(edge.dataset.source);
+          linked.add(edge.dataset.target);
+        }
+      }
+      for (const node of svg.querySelectorAll(".node, .label")) {
+        node.classList.toggle("dim", !linked.has(node.dataset.id));
+      }
+    }
+
+    function clearHighlight() {
+      for (const item of svg.querySelectorAll(".dim, .active")) {
+        item.classList.remove("dim", "active");
+      }
+    }
+
+    function showTip(event, content) {
+      tip.innerHTML = content;
+      tip.style.display = "block";
+      tip.style.left = `${event.clientX + 14}px`;
+      tip.style.top = `${event.clientY + 14}px`;
+    }
+
+    function hideTip() {
+      tip.style.display = "none";
+    }
+
+    function escapeHtml(value) {
+  return String(value).replace(/[&<>"']/g, ch => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  }[ch]));
+}
+  </script>
+</body>
+</html>

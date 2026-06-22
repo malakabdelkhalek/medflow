@@ -1,14 +1,15 @@
 import pandas as pd
 import re
 from collections import defaultdict
+from pathlib import Path
 import os
 
 # ============================================================
 # CONFIG
 # ============================================================
-BASE      = r"C:\Users\arijk\Desktop\medflow"
-INPUT_CSV = rf"{BASE}\knowledge_base\sources\dataset\interactions_grouped_by_class.csv"
-OUTPUT_DIR = rf"{BASE}\knowledge_base\graph"
+BASE = Path(__file__).resolve().parents[2]
+INPUT_CSV = BASE / "knowledge_base" / "sources" / "dataset" / "interactions_grouped_by_class.csv"
+OUTPUT_DIR = BASE / "knowledge_base" / "graph"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 # ============================================================
