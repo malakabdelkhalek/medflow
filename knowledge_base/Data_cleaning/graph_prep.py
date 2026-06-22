@@ -6,16 +6,9 @@ import os
 
 
 # CONFIG
-<<<<<<< HEAD:knowledge_base/loaders/data_clean_01.py
-# ============================================================
-BASE = Path(__file__).resolve().parents[2]
-INPUT_CSV = BASE / "knowledge_base" / "sources" / "dataset" / "interactions_grouped_by_class.csv"
-OUTPUT_DIR = BASE / "knowledge_base" / "graph"
-=======
 BASE      = r"C:\Users\arijk\Desktop\medflow"
 INPUT_CSV = rf"{BASE}\knowledge_base\sources\dataset\interactions_grouped_by_class.csv"
 OUTPUT_DIR = rf"{BASE}\knowledge_base\graph"
->>>>>>> 6220d5258167fe7e858b4a2980efdddcb29b8a84:knowledge_base/Data_cleaning/graph_prep.py
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 
